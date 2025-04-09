@@ -22,7 +22,7 @@ const ThinkingPanel: React.FC<ThinkingPanelProps> = ({ steps, isThinking, initia
   useEffect(() => {
       // 仅在首次接收到步骤且初始未展开时自动展开
       if (steps.length > 0 && !initialExpanded && !isExpanded && isThinking) {
-         // setIsExpanded(true); // 暂时注释掉自动展开逻辑，可根据需要启用
+         setIsExpanded(true); // 暂时注释掉自动展开逻辑，可根据需要启用
       }
       // 当思考完成时，如果面板是展开的，保持展开状态
       // 如果需要思考完成后自动折叠，可以在这里添加逻辑

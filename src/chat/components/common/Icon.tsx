@@ -3,8 +3,13 @@ import React from 'react';
 import * as FeatherIcons from 'react-feather';
 
 // 定义 Icon 组件接受的 props 类型
-interface IconProps extends FeatherIcons.FeatherProps {
+interface IconProps  {
   name: keyof typeof FeatherIcons; // 图标名称，必须是 react-feather 库支持的名称
+  size?: number; // 可选，图标大小
+  className?: string; // 可选，额外的 CSS 类名
+  color?: string; // 可选，图标颜色
+  style?: React.CSSProperties; // 可选，额外的内联样式
+  // 其他可能的属性...
 }
 
 /**
