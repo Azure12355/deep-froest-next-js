@@ -64,6 +64,59 @@ const mockResults = [
         buttonText: '查看详情',
         detailLink: '/search/detail/4'
     },
+    {
+        id: 'result-1', // 添加唯一 key
+        type: 'species',
+        icon: faLeaf,
+        title: '松材线虫',
+        scientificName: 'Bursaphelenchus xylophilus',
+        classification: '线虫动物门',
+        status: '已确认',
+        statusType: 'confirmed',
+        description: '一种毁灭性森林病害，主要危害松树，可导致松树迅速枯萎死亡...',
+        tags: ['寄主: 松属', '分布: 亚洲、北美、欧洲'],
+        buttonText: '查看详情',
+        detailLink: '/search/detail/1' // 示例链接
+    },
+    {
+        id: 'result-2',
+        type: 'species',
+        icon: faBug,
+        title: '美国白蛾',
+        scientificName: 'Hyphantria cunea',
+        classification: '节肢动物门',
+        status: '待审核',
+        statusType: 'pending',
+        description: '一种重要的国际检疫性害虫，食性杂，繁殖量大，危害多种林木、果树和农作物...',
+        tags: ['寄主: 杨树, 柳树, 榆树', '分布: 北美、欧洲、亚洲'],
+        buttonText: '查看详情',
+        detailLink: '/search/detail/2'
+    },
+    {
+        id: 'result-3',
+        type: 'document',
+        icon: faBookOpen,
+        title: '松材线虫病研究进展 (2023)',
+        author: '张三, 李四 等',
+        description: '本文综述了近年来松材线虫病的发生规律、传播途径、致病机理及综合防治技术的最新研究进展...',
+        tags: ['关键词: 松材线虫', '综述', '防治'],
+        buttonText: '查看文献',
+        detailLink: '/literature/3' // 示例文献链接
+    },
+    {
+        id: 'result-4',
+        type: 'species',
+        title: '光肩星天牛',
+        scientificName: 'Anoplophora glabripennis',
+        classification: '节肢动物门',
+        status: '已确认',
+        statusType: 'confirmed',
+        description: '危害多种阔叶树，特别是杨、柳、榆、槭等，是重要的国际检疫对象...',
+        tags: ['寄主: 杨属, 槭属', '分布: 亚洲, 北美'],
+        buttonText: '查看详情',
+        detailLink: '/search/detail/4'
+    },
+    
 ];
 
 
