@@ -1,0 +1,69 @@
+/* src/components/layout/Header.module.css */
+.appHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 2rem;
+    background: var(--gradient-header, linear-gradient(135deg, #6ab1d7 0%, #33d9de 100%)); /* 优先使用全局变量 */
+    color: white;
+    box-shadow: var(--shadow-soft, 0 2px 4px rgba(0, 0, 0, 0.1));
+    height: var(--header-height, 60px); /* 使用全局变量 */
+  }
+  
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logoIcon {
+    margin-right: 0.6rem;
+    font-size: 1.8rem; /* 稍微调整图标大小 */
+  }
+  
+  .userActions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .userActions > * {
+    margin-left: 1.2rem; /* 稍微调整间距 */
+    cursor: pointer;
+  }
+  
+  .actionIcon {
+     font-size: 1.2rem;
+     transition: opacity 0.3s ease;
+  }
+  .actionIcon:hover {
+      opacity: 0.8;
+  }
+  
+  .username {
+    font-size: 0.95rem;
+    margin-left: 1rem; /* 调整用户名间距 */
+  }
+  
+  /* 响应式 (如果需要) */
+  @media (max-width: 768px) {
+      .appHeader {
+          padding: 0.6rem 1rem;
+          height: var(--header-height, 55px);
+      }
+      .logo {
+          font-size: 1.2rem;
+      }
+      .logoIcon {
+          font-size: 1.5rem;
+      }
+      .actionIcon {
+          font-size: 1.1rem;
+      }
+      .username {
+          font-size: 0.9rem;
+      }
+      .userActions > * {
+           margin-left: 0.8rem;
+      }
+  }
