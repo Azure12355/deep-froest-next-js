@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang=""> {/* 设置语言为中文 */}
+    <html lang="en"> {/* 设置语言为中文 */}
       <body className={inter.className}>
          {/* 在这里渲染全局 Header */}
          <Header />
