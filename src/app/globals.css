@@ -1,26 +1,90 @@
-@import "tailwindcss";
+/* src/app/globals.css */
+@import "tailwindcss"; /* 确保 Tailwind 被正确导入 */
 
+/* --- 基础变量定义 (全局 - 仅亮色模式) --- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 主色调 */
+  --primary-blue: #4a90e2;
+  --primary-green: #50e3c2;
+  --primary-purple: #a569bd;
+  --primary-cyan: #36d1dc;
+  --primary-orange: #f5a623;
+  --primary-red: #e74c3c;
+
+  /* 文本与背景 (亮色模式) */
+  --text-color: #2c3e50;
+  --text-secondary: #7f8c9a;
+  --background-color: #f8faff;
+  --card-background: #ffffff;
+  --border-color-light: #e6f0fa;
+
+  /* 设计元素 */
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --shadow-soft: 0 6px 15px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* 渐变色 */
+  --gradient-accent: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-cyan) 100%);
+  --gradient-accent-hover: linear-gradient(135deg, #7bc8eb 0%, #6fe7f5 100%);
+  --gradient-sidebar-bg: linear-gradient(to bottom, #ffffff 0%, #f8faff 100%);
+  --gradient-text-color: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-green) 100%);
+  --gradient-header: linear-gradient(to right, #2b5876, #4e4376);
+
+  /* 基础布局尺寸 */
+  --header-height: 60px;
+  --left-sidebar-width: 330px;
+  --right-sidebar-width: 360px;
+  --top-analysis-height: 260px;
+  --mini-chart-height: 160px;
+  --mini-chart-min-height: 140px;
+
+  /* 移除 Tailwind 兼容变量的 RGB 定义，因为 body 直接使用 --background-color 等 */
+  /* --background: 248 250 255; */
+  /* --foreground: 44 62 80; */
+
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* --- 响应式 CSS 变量重新定义 (全局) --- */
+@media (max-width: 1450px) { /* 中等偏大屏幕 */
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --right-sidebar-width: 330px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (max-width: 768px) { /* 小型屏幕 */
+  :root {
+    --left-sidebar-width: 100%;
+    --right-sidebar-width: 100%;
+    --top-analysis-height: auto;
+    --mini-chart-height: 180px; /* 稍高一点 */
+    --header-height: 55px;
+  }
 }
+
+@media (max-width: 576px) { /* 超小屏幕 */
+  :root {
+    --header-height: 50px;
+    --mini-chart-height: 160px;
+    --mini-chart-min-height: 140px;
+  }
+}
+
+
+/* Tailwind @theme (如果你的项目使用了这个指令) */
+/* @theme { ... } */
+
+/* 全局 body 样式 */
+body {
+  /* 直接使用亮色模式的 CSS 变量 */
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-family); /* 应用全局字体 */
+  margin: 0; /* 重置默认 margin */
+  padding: 0; /* 重置默认 padding */
+  line-height: 1.6;
+}
+
+/* Tailwind @layer (如果需要) */
+/* @layer utilities { ... } */
