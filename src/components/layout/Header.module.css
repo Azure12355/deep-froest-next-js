@@ -1,31 +1,22 @@
 /* src/components/layout/Header.module.css */
+/* 全局变量已在 globals.css 定义 */
+/* Ant Design 组件（Menu, Button, Avatar, Space 等）的样式主要由 ConfigProvider 控制 */
 
-/*
- * ==================================================
- * Header 模块化样式文件
- * 注意：原先在此处定义的 :root 变量已被移动到全局的 globals.css 文件中。
- * 此文件现在只包含 Header 组件自身的局部样式规则。
- * 它会引用在 globals.css 中定义的全局 CSS 变量。
- * ==================================================
- */
-
- .appHeader {
+.appHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* 使用全局变量设置内边距和高度 */
-  padding: 0 var(--header-padding-horizontal);
+  padding: 0 var(--layout-padding); /* 使用布局内边距 */
   height: var(--header-height);
-  /* 使用全局变量设置背景色和边框 */
-  background-color: var(--header-background);
-  border-bottom: 1px solid var(--header-border-color);
-  /* 使用全局变量设置阴影 */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.06);
-  position: fixed; /* 固定在顶部 */
+  background-color: rgba(255, 255, 255, 1); /* Header 背景 */
+  border-bottom: 1px solid var(--border-color-base); /* 底部边框 */
+  /* 使用更柔和的阴影 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02);
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000; /* 确保在最上层 */
+  z-index: 1000;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -33,177 +24,126 @@
 .leftSection {
   display: flex;
   align-items: center;
-  gap: 20px; /* Logo 和导航之间的间距 */
+  gap: var(--layout-gap); /* 使用布局间距 */
 }
 
 /* Logo */
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px; /* 图标和文字间距 */
-  text-decoration: none; /* 移除链接下划线 */
+  gap: 8px;
+  text-decoration: none;
+  margin-left: 30px;
 }
 
 .logoIcon {
-  /* 如果使用 Image 组件，可能不需要额外样式 */
+  /* 如果使用 Image 组件，基本不需要额外样式 */
+  display: flex; /* 确保垂直居中 */
+  align-items: center;
 }
 
 .logoText {
   font-size: 1.25rem; /* 20px */
   font-weight: 600;
-  color: #1f2937; /* 深灰色 Logo 文字 */
+  color: var(--text-color-primary); /* Logo 文字颜色 */
   white-space: nowrap; /* 防止文字换行 */
 }
 
-/* 主导航 */
+/* 主导航 (Ant Design Menu) */
+/* 主要的颜色、背景、字体由 ConfigProvider 控制 */
 .mainNav {
-  background-color: transparent !important; /* 覆盖 antd 默认背景 */
-  border-bottom: none !important; /* 覆盖 antd 默认下边框 */
-  /* 使用 calc 和全局变量计算行高以垂直居中 */
-  line-height: calc(var(--header-height) - 2px); /* 减去边框高度 */
-  flex-grow: 1; /* 允许导航占据可用空间 */
-  min-width: 0; /* 防止在 flex 布局中溢出 */
+  margin-left: 30px;
+  background-color: transparent !important; /* 覆盖 AntD 可能的背景 */
+  border-bottom: none !important; /* 覆盖 AntD 可能的边框 */
+  /* 通过 line-height 实现垂直居中 */
+  line-height: calc(var(--header-height) - 2px); /* 减去上下边框(如果有)或微调 */
+  flex-grow: 1; /* 允许导航占据空间 */
+  min-width: 0; /* 防止 flex 溢出 */
+  /* Ant Design 5.x Menu 可能需要设置 height */
+  height: var(--header-height);
+  /* display: flex; align-items: center; */ /* 另一种居中方式 */
 }
 
 /* 导航菜单项 */
-/* 使用 :global() 包裹 antd 的类名，确保样式能正确应用 */
+/* ConfigProvider 会处理大部分样式 */
 .mainNav :global(.ant-menu-item),
 .mainNav :global(.ant-menu-submenu-title) {
-  /* 使用全局变量设置导航项内边距 */
-  padding: 0 var(--nav-item-spacing) !important;
+  /* 控制间距和圆角 */
+  padding: 0 12px !important; /* 调整导航项左右内边距 */
   margin: 0 4px !important; /* 导航项之间的外边距 */
-  /* 使用全局变量设置导航文字颜色 */
-  color: var(--nav-text-color) !important;
-  font-size: 14px;
-  font-weight: 500;
-  top: 0 !important; /* 确保垂直居中 */
-  border-radius: 6px; /* 轻微圆角 */
-  transition: background-color 0.2s ease, color 0.2s ease;
+  top: 0 !important; /* 确保垂直对齐 */
+  border-radius: var(--border-radius-base) !important; /* 统一圆角 */
 }
-/* 导航菜单项的图标 */
-.mainNav :global(.ant-menu-item .anticon),
-.mainNav :global(.ant-menu-submenu-title .anticon) {
-  margin-right: 6px; /* 图标和文字间距 */
+.mainNav :global(.ant-menu-title-content) {
+  font-size: 16px; /* 确保字体大小 */
+  font-weight: 500; /* 默认字重 */
 }
 
-/* 导航菜单项悬停 */
-.mainNav :global(.ant-menu-item:hover),
-.mainNav :global(.ant-menu-submenu-title:hover) {
-  background-color: #f3f4f6 !important; /* 浅灰色背景 */
-  /* 使用全局变量设置悬停文字颜色 */
-  color: var(--nav-text-hover-color) !important;
-}
-
-/* 导航菜单项选中 */
-.mainNav :global(.ant-menu-item-selected) {
-  background-color: transparent !important; /* 选中时背景透明 */
-  /* 使用全局变量设置选中文字颜色 */
-  color: var(--nav-text-hover-color) !important;
-  font-weight: 600;
-}
-/* 选中项的下划线指示器 (Antd 默认样式) */
+/* 选中项的下划线 */
+/* ConfigProvider 会处理颜色 */
 .mainNav :global(.ant-menu-item-selected::after),
 .mainNav :global(.ant-menu-item-active::after) {
-  /* 使用全局变量设置选中下划线颜色 */
-  border-bottom-color: var(--nav-text-hover-color) !important;
   border-bottom-width: 2px !important; /* 下划线粗细 */
-}
-
-/* 更多按钮 (如果独立使用) */
-.moreButton {
-  /* 使用全局变量设置图标颜色 */
-  color: var(--icon-color);
-}
-.moreButton:hover {
-  /* 使用全局变量设置图标悬停颜色 */
-  color: var(--icon-hover-color);
-  background-color: #f3f4f6; /* 悬停背景 */
 }
 
 /* --- 右侧区域 --- */
 .rightSection {
   display: flex;
   align-items: center;
+  /* 推荐使用 Ant Design 的 Space 组件来控制间距 */
+  /* gap: var(--layout-gap); */
 }
 
-/* 操作按钮通用样式 */
+/* 操作按钮 (Ant Design Button) */
+/* 大部分由 ConfigProvider 主题化 */
 .actionButton {
-  border-radius: 6px;
-  font-weight: 500;
+  /* 若需特定样式覆盖 */
+  /* 例如: min-width: 80px; */
 }
 
-/* VIP 会员按钮 */
+/* VIP 会员按钮 (Ant Design Button type="primary") */
+/* 通常不需要额外样式 */
 .vipButton {
-  /* 使用全局变量设置背景色和边框色 */
-  background-color: var(--button-primary-bg);
-  border-color: var(--button-primary-bg);
-  color: white;
-  border-radius: 6px;
-  font-weight: 500;
-}
-.vipButton:hover {
-  /* 使用全局变量设置悬停背景色和边框色 */
-  background-color: var(--button-primary-hover-bg);
-  border-color: var(--button-primary-hover-bg);
+
 }
 
-/* 通知图标 */
+/* 通知图标等 (Ant Design Icon, Badge, Avatar) */
+/* ConfigProvider 会处理颜色 */
 .actionIcon {
-  background-color: #f3f4f6; /* 图标背景 */
-  /* 使用全局变量设置图标颜色 */
-  color: var(--icon-color);
+  /* color: var(--text-color-tertiary); */ /* 颜色由 AntD 控制 */
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 1.2rem; /* 调整图标大小 */
+  /* 可以设置 hover 效果 */
+  /* transition: color 0.2s ease; */
 }
-.actionIcon:hover {
-  background-color: #e5e7eb;
-  /* 使用全局变量设置图标悬停颜色 */
-  color: var(--icon-hover-color);
-}
+/* .actionIcon:hover { color: var(--text-color-secondary); } */
 
-/* 用户头像 */
 .userAvatar {
   cursor: pointer;
-  background-color: #e5e7eb; /* 默认头像背景 */
-   /* 使用全局变量设置图标颜色 */
-  color: var(--icon-color);
-  transition: box-shadow 0.2s ease;
-}
-.userAvatar:hover {
-   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2); /* 悬停时添加外发光效果 */
+  /* AntD Avatar 样式由 ConfigProvider 控制 */
 }
 
-/* --- 响应式调整 (可选) --- */
-@media (max-width: 1024px) {
-  /* .mainNav { */
-    /* 在小屏幕上可能需要隐藏部分导航项或使用 antd 的 overflowedIndicator */
-  /* } */
-  /* .vipButton span:not(.anticon), */
-  /* .actionButton span:not(.anticon) { */
-     /* 在较小屏幕上隐藏按钮文字，只显示图标 */
-     /* display: none; */
-  /* } */
-}
 
+/* --- 响应式调整 --- */
 @media (max-width: 768px) {
-  /* 响应式调整现在主要在 globals.css 中通过修改全局变量完成 */
+  /* Header 高度和内边距已在 :root 中调整 */
   .logoText {
-    display: none; /* 在超小屏幕隐藏 Logo 文字 */
+    display: none; /* 在小屏幕隐藏 Logo 文字 */
   }
   .leftSection {
-      gap: 10px;
+      gap: 10px; /* 减小 Logo 和导航间距 */
   }
-  /* 可以进一步调整间距或隐藏元素 */
+  /* 可能需要隐藏部分导航项，AntD Menu 支持响应式 */
   .mainNav :global(.ant-menu-item),
   .mainNav :global(.ant-menu-submenu-title) {
-       padding: 0 6px !important; /* 进一步减少内边距 */
+       padding: 0 8px !important; /* 进一步减少导航项内边距 */
        margin: 0 2px !important;
   }
-   .rightSection :global(.ant-space-item) {
-       /* 减小右侧按钮/图标之间的间距 */
-       margin-right: 8px !important;
-   }
-   .rightSection :global(.ant-space-item:last-child) {
-        margin-right: 0 !important;
-   }
+   /* 如果使用 Space 组件，其响应式更好控制 */
+   /* .rightSection { gap: 8px; } */
+}
+
+@media (max-width: 576px) {
+    /* Header 高度已在 :root 中调整 */
+    /* 可以进一步隐藏导航项或使用抽屉导航 */
 }

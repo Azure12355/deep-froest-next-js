@@ -36,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <nav className="sidebar">
       {/* 侧边栏头部 */}
       <div className="sidebar-header">
-        <div className="logo">DeepForest</div> {/* 应用 Logo 或名称 */}
+        {/* <div className="logo">DeepForest</div> 应用 Logo 或名称 */}
         <button className="new-chat-btn" onClick={onNewChat}>
           <Icon name="Plus" size={16} className="feather" /> 新建对话
         </button>

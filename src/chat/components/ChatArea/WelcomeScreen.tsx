@@ -46,15 +46,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ isHidden, onSuggestionCli
             {/* 欢迎头部 */}
             <div className="welcome-header">
                  {/* 可以替换成 DeepForest 的 Logo SVG */}
-                <svg width="50" height="50" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="welcome-logo">
-                    <linearGradient id="gradWelcome" gradientUnits="userSpaceOnUse" x1="32" y1="0" x2="32" y2="64">
-                        <stop offset="0" stopColor="#34D399"/> {/* 修改为绿色渐变 */}
-                        <stop offset="1" stopColor="#10B981"/>
-                    </linearGradient>
-                    {/* <rect width="64" height="64" rx="16" fill="url(#gradWelcome)"/> */}
-                    {/* 可以设计一个林业相关的图标放在中间 */}
-                    <Icon name="Feather" color="white" size={32} style={{ position: 'absolute', top: '16px', left: '16px' }}/>
-                </svg>
+                <Image style={{alignItems: 'center'}} src="/next.svg" alt="DeepForest Logo" width={256} height={256} />
                 <h1>我是 DeepForest，你的林业智能助手</h1>
                 <p>
                     我可以帮你解答林业病虫害问题，

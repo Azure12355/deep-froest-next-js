@@ -4,14 +4,14 @@
 /* --- :root 变量定义 (保持不变) --- */
 :root {
     /* 主题颜色 */
-    --primary-color: #7A59F5;
-    --primary-color-light: #8F6DF9;
+    --primary-color: #f3f4f6;
+    --primary-color-light: #f3f4f6;
     --sidebar-bg: linear-gradient(180deg, var(--primary-color-light) 0%, var(--primary-color) 100%);
     /* 背景色 */
     --chat-bg: #F7F8FA;
     --container-bg: #ffffff;
     --ai-msg-bg: #F9FAFB;
-    --user-msg-bg: #EFF6FF; /* 调整了用户消息背景色，更柔和 */
+    --user-msg-bg: rgb(67, 144, 253); /* 调整了用户消息背景色，更柔和 */
     --thinking-header-bg: #F3F4F6;
     /* 文本颜色 */
     --text-primary: #1F2937;
@@ -20,19 +20,19 @@
     --text-light: #9CA3AF;
     --text-white: #ffffff;
     --text-link: #5A67EA;
-    --user-msg-text: #1E40AF; /* 调整了用户消息文本色 */
+    --user-msg-text: white; /* 调整了用户消息文本色 */
     --hot-list-num-color: #EF4444;
     /* 边框颜色 */
     --border-color: #E5E7EB;
     --border-color-light: #F3F4F6;
     /* 按钮和交互状态 */
     --button-primary-bg: var(--primary-color);
-    --button-primary-hover-bg: #6D47F2;
-    --new-chat-button-bg: rgba(255, 255, 255, 0.15); /* 调整新建对话按钮背景更融入侧边栏 */
-    --new-chat-button-hover-bg: rgba(255, 255, 255, 0.25);
+    --button-primary-hover-bg: 22, 119, 255;
+    --new-chat-button-bg: rgba(229, 235, 247); /* 调整新建对话按钮背景更融入侧边栏 */
+    --new-chat-button-hover-bg: rgba(218, 228, 247);
     --toggle-active-bg: #E0E7FF;
     --toggle-active-border: #A5B4FC;
-    --toggle-active-text: #4338CA;
+    --toggle-active-text: #1677ff;
     /* 尺寸和阴影 */
     --border-radius-lg: 12px;
     --border-radius-md: 8px;
@@ -52,8 +52,8 @@
 /* --- 主应用容器 --- */
 .app-container {
     display: flex;
-    width: 100vw; /* 占满视口宽度 */
-    height: 100vh; /* 占满视口高度 */
+    width: 100%; /* 占满视口宽度 */
+    height: 91.5vh; /* 占满视口高度 */
     max-width: 100%; /* 移除最大宽度限制，由页面布局控制 */
     max-height: 100%; /* 移除最大高度限制 */
     background-color: var(--container-bg);
@@ -69,7 +69,7 @@
 .sidebar {
     width: 260px;
     background: var(--sidebar-bg);
-    color: var(--text-white);
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     padding: 15px 10px;
@@ -94,12 +94,12 @@
 
 .new-chat-btn {
     background-color: var(--new-chat-button-bg);
-    color: var(--text-white);
-    border: none;
+    color: rgb(27, 105, 254);
     border-radius: var(--border-radius-md);
+    border-color: rgb(194, 214, 248);
     padding: 10px 15px;
     font-size: 0.9em;
-    font-weight: 500;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -128,7 +128,7 @@
 .history-group { margin-bottom: 15px; }
 .history-timeframe {
     font-size: 0.75em;
-    color: rgba(255, 255, 255, 0.6);
+    color: black;
     padding-left: 5px;
     margin-bottom: 5px;
     display: block;
@@ -141,7 +141,7 @@
     width: 100%; /* 占满宽度 */
     padding: 8px 10px;
     font-size: 0.88em;
-    color: rgba(255, 255, 255, 0.85);
+    color: black;
     text-decoration: none;
     border-radius: var(--border-radius-sm);
     white-space: nowrap;
@@ -154,11 +154,13 @@
     cursor: pointer; /* 统一鼠标样式 */
 }
 .history-list li a:hover, .history-list li button:hover {
-     background-color: rgba(255, 255, 255, 0.1);
+     background-color: rgba(22, 119, 255, 0.05);
 }
 .history-list li.active a, .history-list li.active button { /* 当前选中的对话 */
-    background-color: rgba(255, 255, 255, 0.2);
-    font-weight: 500;
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 
@@ -173,28 +175,28 @@
     display: flex;
     align-items: center;
     padding: 10px 15px;
-    color: rgba(255, 255, 255, 0.8);
+    color: black;
     text-decoration: none;
     border-radius: var(--border-radius-md);
     margin-bottom: 5px;
     transition: background-color 0.2s ease, color 0.2s ease;
     font-size: 0.95em;
 }
-.nav-links li a:hover { background-color: rgba(255, 255, 255, 0.1); color: white; }
-.nav-links li.active a { background-color: rgba(255, 255, 255, 0.2); color: white; font-weight: 500; }
+.nav-links li a:hover { background-color: rgba(22, 119, 255, 0.1); color: rgb(22, 119, 255); }
+.nav-links li.active a { background-color: rgba(22, 119, 255, 0.8); color: white; font-weight: bold; }
 .nav-links li a .feather { margin-right: 12px; width: 18px; height: 18px; }
 
 /* 侧边栏底部 */
 .sidebar-footer {
     padding: 10px 10px 5px 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid black;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
 }
 .sidebar-footer a, .sidebar-footer button { /* 支持链接或按钮 */
-    color: rgba(255, 255, 255, 0.8);
+    color: black;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -208,7 +210,7 @@
 }
 .sidebar-footer a:hover, .sidebar-footer button:hover {
     background-color: rgba(255, 255, 255, 0.1);
-    color: white;
+    color: rgb(22, 119, 255);
 }
 .sidebar-footer .feather { margin-right: 8px; width: 16px; height: 16px; }
 .user-profile .feather { margin-right: 0; } /* 用户头像按钮不需要右边距 */
@@ -220,7 +222,7 @@
     flex-direction: column;
     background-color: var(--container-bg); /* 或 var(--chat-bg) 根据设计 */
     position: relative; /* 为了欢迎屏幕的绝对定位 */
-    height: 100vh; /* 确保聊天区域占满剩余高度 */
+    height: 100%; /* 确保聊天区域占满剩余高度 */
     overflow: hidden; /* 防止内部元素溢出 */
 }
 
@@ -313,9 +315,9 @@
     padding: 10px 12px; border-radius: var(--border-radius-sm); margin-bottom: 10px;
     cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; border: 1px solid transparent;
 }
-.efficiency-tools .tool-item:hover { background-color: #e9ecef; border-color: var(--border-color); }
-.efficiency-tools .tool-item .feather { margin-right: 10px; width: 18px; height: 18px; color: var(--primary-color); margin-top: 2px; flex-shrink: 0; }
-.efficiency-tools .tool-item div { font-size: 0.9em; color: var(--text-primary); font-weight: 500; }
+.efficiency-tools .tool-item:hover { background-color: #e9ecef; border-color: rgb(160, 190, 249); }
+.efficiency-tools .tool-item .feather { margin-right: 10px; width: 18px; height: 18px; color: rgb(22, 119, 255); margin-top: 2px; flex-shrink: 0; }
+.efficiency-tools .tool-item div { font-size: 0.9em; color: var(--text-primary); font-weight: 500; margin-right: 5px; }
 .efficiency-tools .tool-item span { display: block; font-size: 0.8em; color: var(--text-tertiary); font-weight: 400; margin-top: 2px; }
 .visual-showcase .showcase-image { width: 100%; aspect-ratio: 16 / 7; background-color: #eee; border-radius: var(--border-radius-sm); overflow: hidden; margin-bottom: 15px; position: relative; }
 .visual-showcase .showcase-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -608,7 +610,7 @@
 }
 .input-area:focus-within {
     box-shadow: 0 6px 20px rgba(122, 89, 245, 0.15);
-    border-color: rgba(122, 89, 245, 0.5);
+    border-color: rgb(22, 119, 255, 0.8);
 }
 
 /* 输入区域左侧按钮 */
@@ -727,7 +729,8 @@
 
 /* 发送按钮 */
 #send-button {
-    background: linear-gradient(135deg, var(--primary-color-light), var(--primary-color)); /* 渐变背景 */
+    /* background: linear-gradient(135deg, var(--primary-color-light), var(--primary-color)); 渐变背景 */
+    background: #1677ff;
     color: var(--text-white);
     border: none; border-radius: 50%; /* 圆形 */
     width: 40px; height: 40px;
