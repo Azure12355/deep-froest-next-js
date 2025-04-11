@@ -3,6 +3,7 @@ import React from 'react';
 import Icon from './common/Icon'; // 引入自定义 Icon 组件
 import EChartBase from './common/EChartBase'; // 引入 ECharts 基础封装组件
 import type { ChartCardData } from '@/analysis/types'; // 引入图表卡片数据类型定义
+import { faSitemap, faLeaf, faBookOpen, faComments, faDatabase, faCheckCircle, faChartLine, faGlobe, faBug, faChartArea, faTags, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 
 // 定义 ChartCard 组件的 Props 接口
 interface ChartCardProps {
@@ -29,7 +30,26 @@ const ChartCard: React.FC<ChartCardProps> = ({ chartData }) => {
   // --- 定义图表容器的内联样式 ---
   // 优先使用 chartData 中传入的 chartHeight，否则默认为 '100%' (由 flex 填充)
   // 设置最小高度确保图表在没有足够内容时也能显示
-  const chartContainerStyle: React.CSSProperties = {
+  // 根据图标名称获取对应的FontAwesome图标
+const getIconByName = (iconName: string) => {
+  const iconMap: { [key: string]: any } = {
+    'sitemap': faSitemap,
+    'leaf': faLeaf,
+    'book-open': faBookOpen,
+    'comments': faComments,
+    'database': faDatabase,
+    'check-circle': faCheckCircle,
+    'chart-line': faChartLine,
+    'globe-asia': faGlobe,
+    'bug': faBug,
+    'chart-area': faChartArea,
+    'tags': faTags,
+    'file-alt': faFileAlt
+  };
+  return iconMap[iconName] || faChartLine; // 默认返回chart-line图标
+};
+
+const chartContainerStyle: React.CSSProperties = {
     width: '100%', // 宽度始终为 100%
     height: chartHeight || '100%', // 高度优先使用传入值
     minHeight: '250px', // 设置一个合理的最小高度
@@ -42,7 +62,7 @@ const ChartCard: React.FC<ChartCardProps> = ({ chartData }) => {
       {/* 卡片头部 */}
       <div className="card-header">
         {/* 显示图标 */}
-        <Icon iconName={icon} className={`icon icon-${icon}`} />
+        <Icon icon={getIconByName(icon)} className={`icon icon-${icon}`} />
         {/* 显示图表标题 */}
         <span>{title}</span>
       </div>

@@ -51,7 +51,7 @@ const EChartBase: React.FC<EChartBaseProps> = ({
           if (chartRef.current) {
             try {
               const chart = echarts.init(chartRef.current, theme);
-              chartInstanceRef.current = chart;
+              chartInstanceRef.current = chart as unknown as ECharts;
               console.log('ECharts instance initialized successfully.', chartRef.current.id || '');
               
               // 立即设置选项，确保图表显示

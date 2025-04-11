@@ -8,6 +8,7 @@ import MetricCard from '@/analysis/components/MetricCard';
 import ChartCard from '@/analysis/components/ChartCard';
 import type { MetricData, ChartCardData, NameValueData, TimeSeriesData, GeoDistributionData, TopHostData, EChartOption } from '@/analysis/types';
 import Icon from '@/analysis/components/common/Icon';
+import { faGlobeAsia } from '@fortawesome/free-solid-svg-icons';
 import { checkMapRegistered, echarts } from '@/lib/echartsSetup'; // 引入地图检查函数
 import '../globals.css';
 import '@/analysis/styles.css';
@@ -306,7 +307,7 @@ export default function AnalysisPage() {
                                     // 地图未准备好时的占位符
                                     <div className="card chart-card large-card">
                                         <div className="card-header">
-                                            <Icon iconName="globe-asia" className="icon" />
+                                            <Icon icon={faGlobeAsia} className="icon" />
                                             <span>物种地理分布热力 (地图加载失败或未就绪)</span>
                                         </div>
                                         <div className="chart-container tall-chart" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', border: '1px dashed #ccc' }}>

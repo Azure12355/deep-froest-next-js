@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Icon from './common/Icon'; // 引入自定义的 Icon 组件
+import { faTree, faUserCircle, faBell } from '@fortawesome/free-solid-svg-icons'; // 引入需要的图标
 
 /**
  * DeepForest 数据分析仪表盘的头部组件。
@@ -48,7 +49,7 @@ const DashboardHeader: React.FC = () => {
       {/* Logo 和标题区域 */}
       <div className="logo">
         {/* 使用 Icon 组件显示树图标 */}
-        <Icon iconName="tree" className="icon" />
+        <Icon icon={faTree} className="icon" />
         {/* 显示仪表盘标题 */}
         <h1>DeepForest 数据分析</h1>
       </div>
@@ -61,11 +62,11 @@ const DashboardHeader: React.FC = () => {
       {/* 用户信息和操作区域 */}
       <div className="user-profile">
         {/* 用户图标，并绑定点击事件 */}
-        <Icon iconName="user-circle" className="icon" onClick={handleUserClick} />
+        <Icon icon={faUserCircle} className="icon" onClick={handleUserClick} />
         {/* 显示用户名（这里是静态的，可以替换为动态获取的用户名） */}
         <span>管理员</span>
         {/* 通知图标，并绑定点击事件 */}
-        <Icon iconName="bell" className="icon" onClick={handleNotificationClick} />
+        <Icon icon={faBell} className="icon" onClick={handleNotificationClick} />
       </div>
     </header>
   );
