@@ -1,92 +1,99 @@
 // src/app/chat/page.tsx
-"use client"; // 标记为客户端组件，因为包含状态和交互
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/chat/components/Sidebar/Sidebar';
 import ChatArea from '@/chat/components/ChatArea/ChatArea';
 import type { HistoryGroupData } from '@/chat/types';
-import '../globals.css'; // 引入全局样式
-import '@/chat/styles.css'; // 引入聊天界面专属样式
+import { fetchChatHistory } from '@/services/chatApi';
+import '../globals.css';
+import '@/chat/styles.css'; // 确保样式文件被引入
+// 引入 antd 图标库中的 MenuOutlined
+import { MenuOutlined } from '@ant-design/icons';
+import { Button } from 'antd'; // 引入 antd 按钮 (可选, 也可以用普通 button)
 
-/**
- * DeepForest 聊天主页面组件
- */
 export default function ChatPage() {
-  // --- State ---
-  // 当前激活的对话 ID，null 表示新对话或未选择状态
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  // 侧边栏历史记录数据 (实际应用中应从API或状态管理获取)
   const [historyGroups, setHistoryGroups] = useState<HistoryGroupData[]>([]);
-  // 可以添加加载状态
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [chatAreaKey, setChatAreaKey] = useState<string>('new');
+
+  // --- 新增状态：管理移动端侧边栏是否可见 ---
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // --- 新增函数：切换移动端侧边栏状态 ---
+  const toggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(prev => !prev);
+  }, []);
+
+  // --- 新增函数：关闭移动端侧边栏（例如点击遮罩层） ---
+  const closeMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
 
 
-  // --- Effects ---
-  // 模拟加载历史记录
+  const loadHistory = useCallback(async () => {
+      setIsLoadingHistory(true);
+      try {
+          const loadedHistory = await fetchChatHistory();
+          setHistoryGroups(loadedHistory);
+      } catch (error) {
+          console.error("Failed to load chat history:", error);
+      } finally {
+          setIsLoadingHistory(false);
+      }
+  }, []);
+
   useEffect(() => {
-    setIsLoadingHistory(true);
-    // 模拟 API 调用
-    setTimeout(() => {
-        // 从 localStorage 或 API 加载历史记录
-        // const loadedHistory = loadHistoryFromApi();
-        // setHistoryGroups(loadedHistory);
+    loadHistory();
+  }, [loadHistory]);
 
-        // --- 模拟数据 ---
-        setHistoryGroups([
-             {
-                 timeframe: '当天',
-                 items: [{ id: 'chat1', title: '你好，今天天气怎么样？' }],
-             },
-             {
-                 timeframe: '最近30天',
-                 items: [
-                     { id: 'chat2', title: '【下图为scrapy爬虫的目录】' },
-                     { id: 'chat3', title: '你是什么模型？介绍一下你自己。' },
-                 ],
-             },
-             {
-                 timeframe: '最近半年',
-                 items: [
-                     { id: 'chat4', title: 'Java 如何高效切割字符串' },
-                     { id: 'chat5', title: '帮我写一个 React Hook' },
-                 ],
-             },
-         ]);
-         // --- 模拟结束 ---
-
-      setIsLoadingHistory(false);
-    }, 500); // 模拟延迟
-  }, []); // 仅在组件挂载时加载一次
-
-  // --- Handlers ---
-  // 处理新建对话
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     console.log("New Chat requested");
-    setActiveChatId(null); // 设置 activeChatId 为 null 表示新对话
-    // 可能还需要清除 ChatArea 的当前消息等状态，通过 key={activeChatId} 实现
-  };
+    setActiveChatId(null);
+    setChatAreaKey(`new-${Date.now()}`);
+    closeMobileSidebar(); // 开始新聊天时关闭移动端侧边栏
+  }, [closeMobileSidebar]); // 依赖 closeMobileSidebar
 
-  // 处理选择历史对话
-  const handleChatSelect = (id: string) => {
+  const handleChatSelect = useCallback((id: string) => {
     console.log("Selected chat:", id);
-    setActiveChatId(id); // 更新当前激活的对话 ID
-  };
+    setActiveChatId(id);
+    setChatAreaKey(id);
+    closeMobileSidebar(); // 选择聊天时关闭移动端侧边栏
+  }, [closeMobileSidebar]); // 依赖 closeMobileSidebar
 
-  // 处理管理历史记录
+
+  const handleChatStarted = useCallback((newChatId: string) => {
+      console.log('New chat started with ID:', newChatId);
+      loadHistory();
+      setActiveChatId(newChatId);
+      setChatAreaKey(newChatId);
+      // 不需要关闭侧边栏，因为用户可能是在侧边栏打开时开始的新聊天
+  }, [loadHistory]);
+
   const handleManageHistory = () => {
       console.log("Manage history action");
-      // TODO: 实现管理历史记录的逻辑，例如弹出设置窗口
+      // 可能需要关闭侧边栏
+      closeMobileSidebar();
   };
 
-   // 处理用户头像点击
-   const handleUserProfileClick = () => {
+  const handleUserProfileClick = () => {
        console.log("User profile action");
-       // TODO: 实现用户中心或设置的逻辑
+       // 可能需要关闭侧边栏
+       closeMobileSidebar();
    };
 
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${isMobileSidebarOpen ? 'mobile-sidebar-is-open' : ''}`}>
+       {/* 移动端侧边栏遮罩层 */}
+       {isMobileSidebarOpen && (
+         <div
+           className="mobile-sidebar-overlay"
+           onClick={closeMobileSidebar} // 点击遮罩层关闭侧边栏
+         ></div>
+       )}
+
       {/* 左侧边栏 */}
       <Sidebar
         historyGroups={historyGroups}
@@ -95,11 +102,29 @@ export default function ChatPage() {
         onChatSelect={handleChatSelect}
         onManageHistory={handleManageHistory}
         onUserProfileClick={handleUserProfileClick}
+        // --- 新增 Props ---
+        isMobileOpen={isMobileSidebarOpen} // 传递打开状态
+        onMobileClose={closeMobileSidebar} // 传递关闭函数
       />
 
-      {/* 右侧聊天区域 */}
-      {/* 使用 key={activeChatId || 'new'} 可以在切换对话时强制重新渲染 ChatArea 并重置其内部状态 */}
-      <ChatArea key={activeChatId || 'new'} chatId={activeChatId} />
+      {/* 右侧聊天区域容器 (包含移动端触发按钮) */}
+      <div className="main-content-area">
+        {/* --- 新增：移动端侧边栏触发按钮 --- */}
+        <Button
+            className="mobile-sidebar-toggle"
+            icon={<MenuOutlined />}
+            onClick={toggleMobileSidebar}
+            aria-label="Toggle sidebar" // 无障碍标签
+            type="text" // 使用文本按钮样式，减少视觉干扰
+        />
+
+        {/* 聊天区域 */}
+        <ChatArea
+          key={chatAreaKey}
+          chatId={activeChatId}
+          onChatStarted={handleChatStarted}
+        />
+      </div>
     </div>
   );
 }

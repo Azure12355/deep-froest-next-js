@@ -18,7 +18,7 @@ export interface ChatMessage {
   timestamp: number; // 消息时间戳
 }
 
-/**
+/** 
  * 附件的结构
  */
 export interface Attachment {

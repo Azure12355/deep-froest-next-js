@@ -1,207 +1,222 @@
 // src/chat/components/ChatArea/ChatArea.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import WelcomeScreen from './WelcomeScreen';
 import ChatHistory from './ChatHistory';
 import InputArea from './InputArea';
-import type { ChatMessage, FilePreview, HistoryGroupData, Attachment } from '@/chat/types';
+import type { ChatMessage, Attachment } from '@/chat/types';
+import { fetchChatMessages, sendMessageWithSse } from '@/services/chatApi';
+import type { SseEventData, ChatMessageDto } from '@/services/chatApi'; // 引入类型
 
-// 定义 ChatArea 组件 props 类型
 interface ChatAreaProps {
-  initialMessages?: ChatMessage[]; // 初始加载的消息 (可选)
-  chatId: string | null; // 当前对话的 ID (可选)
-  // 如果需要加载历史记录，可以添加相应的 props
+  chatId: string | null;
+  onChatStarted: (newChatId: string) => void;
 }
 
-/**
- * 右侧主聊天区域组件
- * 管理聊天消息、欢迎屏幕显隐、输入处理等
- * @param initialMessages - （可选）初始加载的聊天消息列表
- * @param chatId - （可选）当前对话的 ID，用于区分不同对话的状态
- */
-const ChatArea: React.FC<ChatAreaProps> = ({ initialMessages = [], chatId }) => {
-  // --- State ---
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages); // 聊天消息列表
-  const [conversationStarted, setConversationStarted] = useState(initialMessages.length > 0); // 是否已开始对话
-  const [isSending, setIsSending] = useState(false); // 是否正在发送消息或等待 AI 响应
+const ChatArea: React.FC<ChatAreaProps> = ({ chatId, onChatStarted }) => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [conversationStarted, setConversationStarted] = useState(!!chatId);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const currentAiMessageIdRef = useRef<string | null>(null);
+  const confirmedChatIdRef = useRef<string | null>(chatId);
 
-  // --- Refs ---
-  const chatHistoryWrapperRef = useRef<HTMLDivElement>(null); // 引用包含 history 的 wrapper
+  const chatHistoryWrapperRef = useRef<HTMLDivElement>(null);
 
   // --- Effects ---
-   // 当 chatId 变化时，可以加载对应的历史记录 (这里用 useEffect 模拟)
-   useEffect(() => {
-     if (chatId) {
-         console.log(`Loading chat history for chatId: ${chatId}`);
-         // TODO: 在此实现从 localStorage 或 API 加载历史记录的逻辑
-         // 示例： const loadedMessages = loadMessagesFromStorage(chatId);
-         // setMessages(loadedMessages);
-         // setConversationStarted(loadedMessages.length > 0);
-
-         // --- 模拟加载 ---
-         if (chatId === 'chat1') {
-            setMessages([
-                { id: 'msg1', type: 'user', content: '你好，今天天气怎么样？', timestamp: Date.now() - 10000 },
-                { id: 'msg2', type: 'ai', content: '你好！我暂时无法获取实时天气信息，建议您使用专业天气应用查看。', timestamp: Date.now() - 5000 }
-            ]);
-            setConversationStarted(true);
-         } else if (chatId === 'chat3') {
-             setMessages([
-                 { id: 'msg3', type: 'user', content: '你是什么模型？介绍一下你自己。', timestamp: Date.now() - 20000 },
-                 { id: 'msg4', type: 'ai', content: '我是 DeepForest，一个专注于林业病虫害领域的智能问答系统。我基于先进的 AI 模型和知识图谱构建，旨在为您提供准确、专业的林业信息服务。', timestamp: Date.now() - 15000 }
-             ]);
-             setConversationStarted(true);
-         } else if (chatId) {
-             // 对于其他 chat id，清空消息或加载默认欢迎语
-             // setMessages([]);
-             // setConversationStarted(false);
-         }
-         // --- 模拟结束 ---
-
-     } else {
-         // 如果 chatId 为 null (例如新建对话)，则重置
-         setMessages([]);
-         setConversationStarted(false);
-     }
-   }, [chatId]); // 依赖 chatId
-
-  // --- Handlers ---
-  // 处理发送消息
-    const handleSendMessage = async (text: string, files: File[]) => {
-        if (isSending) return; // 防止重复发送
-
-        setIsSending(true); // 开始发送，禁用输入
-        setConversationStarted(true); // 标记对话开始
-
-        const userMessageId = `user-${Date.now()}`;
-        let userAttachments: Attachment[] = [];
-
-        // 处理文件预览和上传（实际应用需要上传到服务器）
-        if (files.length > 0) {
-            userAttachments = await Promise.all(files.map(async (file, index) => {
-                // 模拟上传并获取 URL，实际应调用上传 API
-                // const uploadedUrl = await uploadFileToServer(file);
-                const previewUrl = await new Promise<string>(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target?.result as string);
-                    reader.readAsDataURL(file);
-                });
-                return {
-                    id: `att-${userMessageId}-${index}`,
-                    type: file.type.startsWith('image/') ? 'image' : 'file',
-                    name: file.name,
-                    url: previewUrl, // 暂时使用本地预览 URL
-                };
-            }));
-        }
-
-        // 创建用户消息对象
-        const userMessage: ChatMessage = {
-            id: userMessageId,
-            type: 'user',
-            content: text,
-            attachments: userAttachments,
-            timestamp: Date.now(),
-        };
-
-        // 更新消息列表，显示用户消息
-        setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-        // --- 模拟 AI 响应 ---
-        const aiMessageId = `ai-${Date.now()}`;
-        const aiThinkingMessage: ChatMessage = {
-            id: aiMessageId,
-            type: 'ai',
-            content: '...', // 初始占位符
-            isThinking: true,
-            thinkingSteps: ['正在分析您的问题...'],
-            timestamp: Date.now() + 100, // 稍微延迟一点
-        };
-        // 显示 AI 正在思考的消息
-        setMessages((prevMessages) => [...prevMessages, aiThinkingMessage]);
-
-        // 模拟思考过程和最终回答
+  useEffect(() => {
+    confirmedChatIdRef.current = chatId;
+    if (chatId) {
+      const loadMessages = async () => {
+        setIsLoadingMessages(true);
+        setConversationStarted(true);
         try {
-            // 模拟网络延迟和处理时间
-            await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
-
-            // 更新思考步骤 (可选)
-            setMessages(prev => prev.map(msg => msg.id === aiMessageId ? {
-                ...msg,
-                thinkingSteps: [...(msg.thinkingSteps || []), '检索林业知识库...', '匹配病虫害特征...']
-            } : msg));
-            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
-
-            setMessages(prev => prev.map(msg => msg.id === aiMessageId ? {
-                ...msg,
-                thinkingSteps: [...(msg.thinkingSteps || []), '生成防治建议...']
-            } : msg));
-            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-
-
-            // 生成模拟回复
-            let aiResponseContent = `关于您提到的 "${text || '附件内容'}"...\n`;
-            if (text.toLowerCase().includes('松材线虫')) {
-                aiResponseContent += `松材线虫病是一种毁灭性的森林病害。\n 主要防治措施包括：\n1.  **疫木清理**: 及时发现并清理感病松树。\n2.  **媒介昆虫防治**: 使用药剂防治天牛等传播媒介。\n3.  **生物防治**: 利用天敌或微生物进行防治。\n4.  **抗病品种选育**: 推广种植抗病松树品种。\n\n\`\`\`json\n{\n  "disease": "松材线虫病",\n  "severity": "High",\n  "control_methods": ["疫木清理", "媒介防治", "生物防治", "抗病育种"]\n}\n\`\`\`\n请注意，具体措施需结合当地实际情况。`;
-            } else if (text.toLowerCase().includes('你好') || text.toLowerCase().includes('hello')) {
-                 aiResponseContent = "你好！我是 DeepForest，很高兴为您服务。请问有什么林业问题我可以帮助您解答吗？";
-            } else {
-                 aiResponseContent += "我已经收到您的问题。正在结合知识图谱和相关数据为您分析，请稍候。\n您也可以尝试上传病虫害图片让我识别。";
-            }
-
-            // 更新 AI 消息，显示最终回答并结束思考状态
-            setMessages(prev => prev.map(msg => msg.id === aiMessageId ? {
-                ...msg,
-                isThinking: false,
-                content: aiResponseContent,
-                thinkingSteps: [...(msg.thinkingSteps || []), '生成回答完毕。'] // 添加最后一步
-            } : msg));
-
+          const loadedMessages = await fetchChatMessages(chatId);
+          setMessages(loadedMessages);
         } catch (error) {
-            console.error("Error simulating AI response:", error);
-            // 处理错误，例如显示错误消息
-             setMessages(prev => prev.map(msg => msg.id === aiMessageId ? {
-                 ...msg,
-                 isThinking: false,
-                 content: "抱歉，处理请求时遇到问题，请稍后再试。",
-             } : msg));
+          console.error(`Failed to load messages for chat ${chatId}:`, error);
+          setMessages([{
+              id: 'error-load', type: 'ai',
+              content: `加载消息失败: ${error instanceof Error ? error.message : '未知错误'}`,
+              timestamp: Date.now()
+          }]);
         } finally {
-            setIsSending(false); // 结束发送状态，启用输入
+          setIsLoadingMessages(false);
         }
-        // --- 模拟结束 ---
-    };
+      };
+      loadMessages();
+    } else {
+      setMessages([]);
+      setConversationStarted(false);
+      setIsLoadingMessages(false);
+    }
+  }, [chatId]);
 
-   // 处理欢迎屏幕上的建议点击
-   const handleSuggestionClick = (prompt: string) => {
-       // 可以在这里直接发送 prompt，或者填充到输入框让用户确认
-       handleSendMessage(prompt, []); // 直接发送
-       // 或者：
-       // userInputRef.current?.focus(); // 聚焦输入框
-       // setUserInput(prompt); // 填充输入框
-   };
+  /**
+   * 处理从后端接收到的 SSE 事件
+   * @param eventData 包含事件类型和负载的对象
+   *
+   * Bug Fix (第三次尝试): 修复第一条 AI 消息气泡不显示的问题。
+   * 问题根源分析: React 状态更新的异步性与 SSE 事件快速到达的时序竞争，
+   *              之前的 map 替换逻辑可能因 placeholder 未及时出现在状态快照中而失败，
+   *              或者后续的状态更新覆盖了 map 的结果。
+   * 新解决方案: 采用更直接的方法处理 final_message 和 error。
+   *              不再尝试替换 placeholder，而是：
+   *              1. 过滤掉旧的 placeholder 消息（根据 ID）。
+   *              2. 将最终的 AI 消息或错误消息直接添加到数组末尾。
+   *              这种方法不依赖于 map 操作是否能在正确时机找到 placeholder。
+   *              对于 thinking_step 和 content_chunk，仍然使用 map 更新。
+   */
+  const handleSseEvent = useCallback((eventData: SseEventData) => {
+      const targetAiMessageId = currentAiMessageIdRef.current;
 
-   // 处理欢迎屏幕“换一换”
-   const handleChangePrompt = () => {
-       console.log("Change prompt clicked - Implement logic to refresh suggestions");
-       // TODO: 实现刷新欢迎屏幕建议的逻辑
-   };
+      setMessages(prevMessages => {
+          // --- 处理 final_message 或 error ---
+          if (eventData.type === 'final_message' || eventData.type === 'error') {
+              if (!targetAiMessageId) {
+                  // 如果是 final 或 error 但没有追踪的 ID，记录警告并返回原状态
+                  console.warn(`${eventData.type} event received without target AI message ID. Ignoring.`);
+                  return prevMessages;
+              }
 
+              console.log(`SSE: ${eventData.type} received for ID ${targetAiMessageId}. Applying final state.`);
+
+              // 1. 过滤掉旧的 placeholder (如果存在)
+              const filteredMessages = prevMessages.filter(msg => msg.id !== targetAiMessageId);
+
+              // 2. 创建最终的消息对象
+              let finalOrErrorMessageToAdd: ChatMessage;
+              if (eventData.type === 'final_message') {
+                  const finalMessageDto = eventData.payload as ChatMessageDto;
+                  finalOrErrorMessageToAdd = {
+                      id: targetAiMessageId, // 使用我们追踪的 ID
+                      type: 'ai',
+                      content: finalMessageDto.content,
+                      attachments: finalMessageDto.attachments?.map(attDto => ({
+                            id: attDto.id, type: attDto.type, name: attDto.name, url: attDto.url,
+                        } as Attachment)) || undefined,
+                      timestamp: finalMessageDto.timestamp,
+                      thinkingSteps: finalMessageDto.thinkingSteps,
+                      isThinking: false,
+                  };
+              } else { // eventData.type === 'error'
+                  console.error("SSE: error event processed:", eventData.payload.message);
+                  finalOrErrorMessageToAdd = {
+                      id: targetAiMessageId, // 使用追踪的 ID
+                      type: 'ai',
+                      content: `抱歉，处理出错：${eventData.payload.message}`,
+                      timestamp: Date.now(),
+                      isThinking: false,
+                  };
+              }
+
+              // 3. 重置状态
+              currentAiMessageIdRef.current = null;
+              setIsSending(false);
+
+              // 4. 返回过滤后的数组加上最终的消息
+              return [...filteredMessages, finalOrErrorMessageToAdd];
+
+          }
+          // --- 处理 thinking_step 或 content_chunk ---
+          else if (eventData.type === 'thinking_step' || eventData.type === 'content_chunk') {
+              if (!targetAiMessageId) {
+                   console.warn(`${eventData.type} event without target AI message ID.`);
+                   return prevMessages; // 没有目标ID，不处理
+              }
+              // 对于中间步骤，仍然使用 map 更新对应的 placeholder
+              let foundAndUpdated = false;
+              const updatedMessages = prevMessages.map(msg => {
+                  if (msg.id === targetAiMessageId) {
+                      foundAndUpdated = true;
+                      if (eventData.type === 'thinking_step') {
+                           return { ...msg, thinkingSteps: [...(msg.thinkingSteps || []), eventData.payload.step], isThinking: true };
+                      } else { // content_chunk
+                           return { ...msg, content: (msg.content === '...' || !msg.content) ? eventData.payload.delta : msg.content + eventData.payload.delta, isThinking: true };
+                      }
+                  }
+                  return msg;
+              });
+              // 添加一个警告，如果 map 没有找到要更新的消息（理论上不应发生，除非状态极度混乱）
+              if (!foundAndUpdated) {
+                   console.warn(`SSE ${eventData.type} event for ${targetAiMessageId} could not find the message in the current state snapshot.`);
+              }
+              return updatedMessages;
+          }
+          // --- 其他事件类型（如 chat_id）或未知类型，不修改消息列表 ---
+          else {
+               // chat_id 等事件在这里不直接修改 prevMessages
+               return prevMessages;
+          }
+      });
+
+      // 单独处理 chat_id 和全局 error (这些不依赖 targetAiMessageId)
+      if (eventData.type === 'chat_id') {
+          console.log("SSE: Received chat ID:", eventData.payload.chatId);
+          const newChatId = eventData.payload.chatId;
+          confirmedChatIdRef.current = newChatId;
+          if (!chatId && newChatId) {
+               requestAnimationFrame(() => onChatStarted(newChatId));
+          }
+      } else if (eventData.type === 'error' && !targetAiMessageId) {
+           // 收到 error 事件，但没有追踪的 AI 消息 ID，认为是全局错误
+           console.error("SSE: Received global error:", eventData.payload.message);
+           setMessages(prev => [...prev, {
+               id: `error-global-${Date.now()}`, type: 'ai',
+               content: `发生错误: ${eventData.payload.message}`, timestamp: Date.now(), isThinking: false,
+           }]);
+           setIsSending(false); // 重置发送状态
+           currentAiMessageIdRef.current = null; // 清空引用
+       }
+
+  }, [chatId, onChatStarted]); // 依赖项保持不变
+
+  // handleSendMessage 函数保持不变
+  const handleSendMessage = useCallback(async (text: string, files: File[]) => {
+    if (isSending) return;
+    setIsSending(true);
+    setConversationStarted(true);
+
+    const userMessageId = `user-${Date.now()}`;
+    let userAttachments: ChatMessage['attachments'] = [];
+
+    if (files.length > 0) {
+        userAttachments = await Promise.all(files.map(async (file, index) => {
+            const previewUrl = await new Promise<string>(resolve => {
+                const reader = new FileReader(); reader.onload = (e) => resolve(e.target?.result as string); reader.readAsDataURL(file);
+            });
+            return { id: `local-att-${userMessageId}-${index}`, type: file.type.startsWith('image/') ? 'image' : 'file', name: file.name, url: previewUrl };
+        }));
+    }
+
+    const userMessage: ChatMessage = { id: userMessageId, type: 'user', content: text, attachments: userAttachments, timestamp: Date.now() };
+
+    const aiPlaceholderId = `ai-placeholder-${Date.now()}`;
+    currentAiMessageIdRef.current = aiPlaceholderId;
+
+    const aiThinkingMessage: ChatMessage = { id: aiPlaceholderId, type: 'ai', content: '...', isThinking: true, thinkingSteps: [], timestamp: Date.now() + 100 };
+
+    setMessages((prevMessages) => [...prevMessages, userMessage, aiThinkingMessage]);
+
+    try {
+      await sendMessageWithSse(text, confirmedChatIdRef.current, files, handleSseEvent);
+    } catch (error) {
+        console.error("Error calling sendMessageWithSse:", error);
+        handleSseEvent({ type: 'error', payload: { message: `发送请求失败: ${error instanceof Error ? error.message : String(error)}` }});
+        setIsSending(false);
+        currentAiMessageIdRef.current = null;
+    }
+  }, [isSending, handleSseEvent]);
+
+  const handleSuggestionClick = (prompt: string) => { handleSendMessage(prompt, []); };
+  const handleChangePrompt = () => { console.log("Change prompt clicked"); };
 
   return (
     <main className="chat-area">
-      {/* 聊天历史记录外部容器，用于控制滚动 */}
       <div className="chat-history-wrapper" ref={chatHistoryWrapperRef}>
-          {/* 欢迎屏幕，仅在对话未开始时显示 */}
-          <WelcomeScreen
-              isHidden={conversationStarted}
-              onSuggestionClick={handleSuggestionClick}
-              onChangePrompt={handleChangePrompt}
-          />
-          {/* 聊天历史记录，仅在对话开始后显示内容或空状态 */}
-          {/* ChatHistory 内部处理滚动 */}
-          <ChatHistory messages={messages} />
+          <WelcomeScreen isHidden={conversationStarted} onSuggestionClick={handleSuggestionClick} onChangePrompt={handleChangePrompt} />
+          {isLoadingMessages && <div style={{textAlign: 'center', padding: '20px'}}>正在加载消息...</div>}
+          {!isLoadingMessages && <ChatHistory messages={messages} />}
       </div>
-
-      {/* 底部输入区域 */}
       <InputArea onSendMessage={handleSendMessage} isSending={isSending} />
     </main>
   );
