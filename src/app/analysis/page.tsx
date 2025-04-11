@@ -269,8 +269,6 @@ export default function AnalysisPage() {
             />
 
             <div className="dashboard-container">
-                <DashboardHeader />
-
                 <main className="dashboard-content">
                     {isLoading ? (
                         <div style={{ textAlign: 'center', padding: '50px', fontSize: '1.2em', color: '#888' }}>

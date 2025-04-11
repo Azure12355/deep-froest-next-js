@@ -113,7 +113,7 @@ const KnowledgeGraphPage: React.FC = () => {
     return (
         <div className={styles.kgContainer}>
             {/* 头部 */}
-            <KGHeader />
+            {/* <KGHeader /> */}
 
             {/* 主要内容网格布局 */}
             <main className={styles.kgMainContentGrid}>
