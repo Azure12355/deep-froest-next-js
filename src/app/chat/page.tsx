@@ -52,7 +52,7 @@ export default function ChatPage() {
     console.log("New Chat requested");
     setActiveChatId(null);
     setChatAreaKey(`new-${Date.now()}`);
-    closeMobileSidebar(); // 开始新聊天时关闭移动端侧边栏
+    closeMobileSidebar(); // 开始新聊天时关闭移动端侧边栏·1 请
   }, [closeMobileSidebar]); // 依赖 closeMobileSidebar
 
   const handleChatSelect = useCallback((id: string) => {

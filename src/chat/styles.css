@@ -446,19 +446,28 @@
 
 /* 减小表格的下外边距和单元格内边距 */
 .markdown-body table {
-    margin-bottom: 1em; /* 从 16px 减小 */
+    margin-top: -43em;
+    margin-bottom: 0em; /* 从 16px 减小 */
     /* 其他样式保留 */
-    /* display: block; */
-    /* width: max-content; */
-    /* max-width: 100%; */
-    /* overflow: auto; */
-    /* border-collapse: collapse; */
-    /* border-spacing: 0; */
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 .markdown-body th,
 .markdown-body td {
     padding: 6px 10px; /* 从 8px 12px 减小 */
-    /* border: 1px solid var(--border-color); 保留 */
+    border: 1px solid var(--border-color);
+}
+
+.markdown-body a {
+    color: var(--primary-color);
+}
+
+.markdown-body a:hover {
+    color:#db2777
 }
 /* .markdown-body th { ... } */
 /* .markdown-body tr:nth-child(even) { ... } */
