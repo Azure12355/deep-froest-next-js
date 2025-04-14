@@ -1,6 +1,6 @@
 {
-  "name": "deep-forest-next-js",
-  "version": "0.1.0",
+  "name": "deep-forest",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
