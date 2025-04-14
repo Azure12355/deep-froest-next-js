@@ -23,6 +23,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chatId, onChatStarted }) => {
   const chatHistoryWrapperRef = useRef<HTMLDivElement>(null);
 
   // --- Effects ---
+  // 加载消息效果
   useEffect(() => {
     confirmedChatIdRef.current = chatId;
     if (chatId) {
@@ -50,6 +51,22 @@ const ChatArea: React.FC<ChatAreaProps> = ({ chatId, onChatStarted }) => {
       setIsLoadingMessages(false);
     }
   }, [chatId]);
+  
+  // 自动滚动到底部效果
+  useEffect(() => {
+    const scrollToBottom = () => {
+      if (chatHistoryWrapperRef.current) {
+        // 使用 requestAnimationFrame 确保在 DOM 更新后执行滚动
+        requestAnimationFrame(() => {
+          if (chatHistoryWrapperRef.current) {
+            chatHistoryWrapperRef.current.scrollTop = chatHistoryWrapperRef.current.scrollHeight;
+          }
+        });
+      }
+    };
+    
+    scrollToBottom();
+  }, [messages]); // 当消息数组变化时触发滚动
 
   /**
    * 处理从后端接收到的 SSE 事件

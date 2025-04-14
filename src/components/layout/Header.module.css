@@ -30,7 +30,7 @@
 }
 
 /* Logo */
-.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none;}
 .logoIcon { display: block; transition: transform 0.3s ease-in-out; }
 .logo:hover .logoIcon { transform: rotate(-10deg) scale(1.05); }
 .logoText {
@@ -150,7 +150,7 @@
 @media (max-width: 575.98px) {
   .appHeader { padding: 0 var(--layout-padding-x-xs, 8px); }
   .leftSection { gap: 8px; }
-  .logoIcon { width: 28px; height: 28px; }
+  .logoIcon { width: 72px; height: 28px;}
   .actionSpace { gap: 4px !important; }
   /* 进一步减小图标按钮大小 */
    .actionButton { padding: 6px !important; }

@@ -75,7 +75,7 @@ const ResultsArea: React.FC<ResultsAreaProps> = ({ searchParams }) => {
        if (isLoading) {
            return (
                <div style={{ textAlign: 'center', padding: '50px' }}>
-                   <Spin size="large" tip="正在加载搜索结果..." />
+                   <Spin size="large" />
                </div>
            );
        }

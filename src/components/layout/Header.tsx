@@ -126,8 +126,8 @@ const Header: React.FC = () => {
            />
 
           <Link href="/" className={styles.logo}>
-            <Image src="/next.svg" alt="DeepForest Logo" width={30} height={30} className={styles.logoIcon} priority />
-            <span className={`${styles.logoText} ${styles.hideOnMobile}`}>DeepForest</span>
+            <Image src="/deepforest.jpg" alt="DeepForest Logo" width={128} height={128} className={styles.logoIcon} priority />
+            {/* <span className={`${styles.logoText} ${styles.hideOnMobile}`}>DeepForest</span> */}
           </Link>
 
           {/* 顶部导航 Menu: 始终渲染，通过 CSS 在移动端隐藏 */}
@@ -146,8 +146,8 @@ const Header: React.FC = () => {
         <div className={styles.rightSection}>
           <Space size="small" wrap className={styles.actionSpace}>
             {/* ... 开源按钮等保持不变 ... */}
-             <Tooltip title="GitHub 仓库"><Button type="default" shape="circle" icon={<GithubOutlined />} href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.githubButton}`} aria-label="GitHub Repository"/></Tooltip>
-             <Tooltip title="提交 Issue 或反馈"><Button type="default" shape="circle" icon={<BugOutlined />} href="https://github.com/your-repo/issues" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.issueButton}`} aria-label="Report an issue"/></Tooltip>
+             <Tooltip title="GitHub 仓库"><Button type="default" shape="circle" icon={<GithubOutlined />} href="https://github.com/Azure12355/deep-forest" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.githubButton}`} aria-label="GitHub Repository"/></Tooltip>
+             <Tooltip title="提交 Issue 或反馈"><Button type="default" shape="circle" icon={<BugOutlined />} href="https://github.com/Azure12355/deep-forest/issues" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.issueButton}`} aria-label="Report an issue"/></Tooltip>
              <Tooltip title="查看文档"><Button type="text" icon={<BookOutlined />} href="/docs" className={`${styles.actionButton} ${styles.hideOnMobile}`} aria-label="Documentation">文档</Button></Tooltip>
              <Tooltip title="查看文档"><Button type="text" icon={<BookOutlined />} href="/docs" className={`${styles.actionButton} ${styles.showOnMobileOnly}`} aria-label="Documentation"/></Tooltip>
              <Tooltip title="加入社区讨论 (Discord)"><Button type="text" icon={<TeamOutlined />} href="https://discord.gg/your-invite" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.hideOnSmallMobile}`} aria-label="Join Community">社区</Button></Tooltip>
@@ -164,8 +164,8 @@ const Header: React.FC = () => {
       <Drawer
         title={
             <Link href="/" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration:'none' }}>
-               <Image src="/next.svg" alt="DeepForest Logo" width={24} height={24} />
-               <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-color-primary)'}}>DeepForest</span>
+               <Image src="/deepforest.jpg" alt="DeepForest Logo" width={96} height={24} />
+               {/* <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-color-primary)'}}>DeepForest</span> */}
             </Link>
         }
         placement="left"

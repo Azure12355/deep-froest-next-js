@@ -316,7 +316,7 @@ export default function AnalysisPage() {
         if (isLoading) {
             return (
                 <div style={{ textAlign: 'center', padding: '50px', fontSize: '1.2em' }}>
-                    <Spin size="large" tip="正在加载仪表盘数据和地图..." />
+                    <Spin size="large"/>
                 </div>
             );
         }
@@ -370,7 +370,7 @@ export default function AnalysisPage() {
              // 但作为防御性编程，添加一个提示
              return (
                 <div style={{ textAlign: 'center', padding: '50px', fontSize: '1.2em' }}>
-                    <Spin size="large" tip="正在准备图表..." />
+                    <Spin size="large" />
                  </div>
              );
         }

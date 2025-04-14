@@ -46,8 +46,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ isHidden, onSuggestionCli
             {/* 欢迎头部 */}
             <div className="welcome-header">
                 {/* 可以替换成 DeepForest 的 Logo SVG */}
-                <div className="logo-container" style={{ display: 'flex', justifyContent: 'center', width: '100%' , marginBottom: '30px'}}>
-                    <Image src="/next.svg" alt="DeepForest Logo" width={256} height={256} />
+                <div className="logo-container" style={{ display: 'flex', justifyContent: 'center', width: '100%' , marginBottom: '5px'}}>
+                    <Image src="/deepforest.jpg" alt="DeepForest Logo" width={380} height={380} />
                 </div>
                 <h1>我是 DeepForest，你的林业智能助手</h1>
                 <p>

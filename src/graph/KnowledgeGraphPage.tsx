@@ -124,7 +124,7 @@ const KnowledgeGraphPage: React.FC = () => {
         if (isLoading) {
             return (
                 <div className={styles.loadingPlaceholder} style={{ gridColumn: '1 / -1', gridRow: '1 / -1' }}>
-                    <Spin size="large" tip="知识图谱加载中..." />
+                    <Spin size="large" />
                 </div>
             );
         }
