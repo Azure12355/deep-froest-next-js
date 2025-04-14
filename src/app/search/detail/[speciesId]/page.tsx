@@ -6,10 +6,10 @@ import {
   faArrowLeft, faIdCard, faDna, faRulerCombined, faMapMarkedAlt, faTree,
   faExchangeAlt, faShieldAlt, faBookOpen, faBolt, faSitemap, faImages,
   faTags, faCogs, faCheckCircle, faInfoCircle, faAngleRight,
-  faHouse, faMicroscope,
+  faHouse, faMicroscope, // 确保使用的图标已导入
   faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
-import { Alert } from 'antd';
+import { Alert } from 'antd'; // 引入 Alert
 
 import styles from './page.module.css';
 import sectionStyles from '@/search/detail/components/InfoSection.module.css';
@@ -19,6 +19,7 @@ import DetailHeader from '@/search/detail/components/DetailHeader';
 import InfoSection from '@/search/detail/components/InfoSection';
 import Tag from '@/search/detail/components/Tag';
 import ImageGallery from '@/search/detail/components/ImageGallery';
+// 引入类型和 API 调用函数
 import { SpeciesDetailData } from '@/search/detail/types';
 import { fetchSpeciesDetail } from '@/services/searchApi';
 
@@ -42,48 +43,32 @@ function getReferenceTagType(tag: string): 'ref-review' | 'ref-book' | 'ref-biol
 // --- End Helper Functions ---
 
 
-// --- generateStaticParams (如果需要静态导出，保持或实现它) ---
-// 如果你没有使用 output: 'export'，可以移除这个函数
-export async function generateStaticParams() {
-  console.log("[generateStaticParams] Generating static params for species details (using mock IDs)...");
-  // 实际项目中应从 API 获取 ID 列表
-  const mockIds = ["sp1-pwn", "sp2-hca", "sp-rifa"]; // 使用 Mock 中明确添加的 ID
-  return mockIds.map((id) => ({
-    speciesId: id,
-  }));
-}
-
-
-// --- The Page Component ---
-// *** 修复：将函数声明为 async ***
+// --- The Page Component (使用明确的内联类型) ---
 export default async function SpeciesDetailPage({
-  params,
-}: {
-  params: { speciesId: string };
-}) {
-  // *** 现在可以安全地访问 params.speciesId ***
-  const speciesId = params.speciesId;
-  console.log(`[Page Component] Rendering detail page for speciesId: ${speciesId}`); // 添加日志确认
-
+    params,
+    // searchParams // 如果需要，可以添加类型: { [key: string]: string | string[] | undefined }
+}: any
+    // searchParams?: { [key: string]: string | string[] | undefined };
+) {
+  const speciesId = params.speciesId; // 现在可以安全地访问
   let speciesData: SpeciesDetailData | null = null;
   let error: string | null = null;
 
-  // --- 数据获取 ---
+  // --- 数据获取 (保持不变) ---
   try {
     speciesData = await fetchSpeciesDetail(speciesId);
   } catch (err: any) {
-    console.error(`[Page Component] 获取物种详情失败 (ID: ${speciesId}):`, err);
+    console.error(`获取物种详情失败 (ID: ${speciesId}):`, err);
     error = err.message || "加载物种详情时发生未知错误";
     if (err.message.includes("未找到")) {
         error = `抱歉，我们无法找到 ID 为 "${speciesId}" 的物种信息。`;
     }
   }
 
-  // --- 渲染逻辑 ---
+  // --- 渲染逻辑 (保持不变) ---
 
   // 处理加载错误
   if (error) {
-    console.log(`[Page Component] Rendering error state for ID: ${speciesId}`);
     return (
       <div className={styles.pageContainer} style={{padding: '2rem'}}>
          <Alert
@@ -102,11 +87,10 @@ export default async function SpeciesDetailPage({
 
   // 处理数据为空
   if (!speciesData) {
-     console.log(`[Page Component] Rendering 'not found' state for ID: ${speciesId}`);
     return (
       <div className={styles.container}>
         <h2>物种未找到</h2>
-        <p>未能加载物种信息 (ID: {speciesId})。</p>
+        <p>未能加载物种信息。</p>
         <Link href="/search" className={styles.backLink}>
            <FontAwesomeIcon icon={faArrowLeft} /> 返回搜索页面
         </Link>
@@ -115,7 +99,7 @@ export default async function SpeciesDetailPage({
   }
 
   // --- 成功获取数据，渲染页面内容 ---
-  console.log(`[Page Component] Rendering species detail for: ${speciesData.chineseName}`);
+  // (JSX 结构保持不变)
   return (
     <div className={styles.pageContainer}>
         <div className={styles.pageActions}>
@@ -125,18 +109,16 @@ export default async function SpeciesDetailPage({
          </div>
 
       <div className={styles.detailContentGrid}>
-        {/* 传递从 API 获取的数据 */}
         <DetailHeader
           chineseName={speciesData.chineseName}
           scientificName={speciesData.scientificName}
           authorship={speciesData.authorship || ''}
           status={speciesData.status || 'unknown'}
           statusText={speciesData.statusText || '未知'}
-          icon={faMicroscope} // 或者根据 speciesData.iconClass
+          icon={faMicroscope}
         />
 
         <div className={styles.mainInfoColumn}>
-          {/* --- 渲染各个 InfoSection --- */}
           <InfoSection title="基本信息" icon={faIdCard}>
              <dl className={`${sectionStyles.infoListInline}`}>
               {speciesData.englishName && <div><dt>英文名称:</dt><dd>{speciesData.englishName}</dd></div>}
@@ -147,10 +129,10 @@ export default async function SpeciesDetailPage({
              </dl>
              <p>{speciesData.description}</p>
              {speciesData.sources && (
-               <div className={sectionStyles.sourceInfo}>
-                 <strong>数据来源:</strong> {speciesData.sources}
-               </div>
-             )}
+              <div className={sectionStyles.sourceInfo}>
+                <strong>数据来源:</strong> {speciesData.sources}
+              </div>
+            )}
           </InfoSection>
 
           {speciesData.biology && (
@@ -168,7 +150,7 @@ export default async function SpeciesDetailPage({
               <p><strong>形态特征:</strong> {speciesData.morphology.characteristics}</p>
               <p><strong>检测方法:</strong></p>
               <ul>
-                {speciesData.morphology.detectionMethods?.map((method, index) => ( // 添加空检查
+                {speciesData.morphology.detectionMethods?.map((method, index) => (
                   <li key={index}>{method}</li>
                 ))}
               </ul>
@@ -180,7 +162,7 @@ export default async function SpeciesDetailPage({
                 <p>{speciesData.distribution.description}</p>
                 <div className={styles.distributionDetails}>
                     <h4>主要分布区域:</h4>
-                    {speciesData.distribution.areas?.map((area, index) => ( // 添加空检查
+                    {speciesData.distribution.areas?.map((area, index) => (
                         <div key={index} className={styles.distributionRegion}>
                             <strong>{area.region}:</strong>
                             <ul>
@@ -190,7 +172,9 @@ export default async function SpeciesDetailPage({
                     ))}
                     {speciesData.distribution.statusDescription && <p><em>{speciesData.distribution.statusDescription}</em></p>}
                 </div>
-                {/* 可以放一个真实的地图组件 */}
+                <div className={sectionStyles.mapPlaceholderSmall}>
+                    <p><FontAwesomeIcon icon={faMapMarkedAlt} /> 分布地图 (占位)</p>
+                </div>
              </InfoSection>
           )}
 
@@ -200,11 +184,11 @@ export default async function SpeciesDetailPage({
                 <p><strong>寄主范围描述:</strong> {speciesData.host.rangeDescription}</p>
                 <h4>主要寄主列表:</h4>
                 <div className={tagStyles.tagContainer}>
-                    {speciesData.host.hosts?.map((host, index) => ( // 添加空检查
+                    {speciesData.host.hosts?.map((host, index) => (
                         <Tag
-                            key={index}
-                            text={`${host.name} (${host.scientificName || 'N/A'})`} // 添加学名空检查
-                            type={getHostTagType(host.type || 'occasional')} // 添加 type 空检查
+                            key={`${host.name}-${index}`}
+                            text={`${host.name} (${host.scientificName})`}
+                            type={getHostTagType(host.type)}
                             tooltip={`${host.type === 'primary' ? '主要' : host.type === 'secondary' ? '次要' : '偶发'}寄主, ${host.category}`}
                         />
                     ))}
@@ -221,9 +205,9 @@ export default async function SpeciesDetailPage({
              <InfoSection title="传播途径与生态影响" icon={faExchangeAlt}>
                 <p><strong>主要传播媒介:</strong></p>
                 <div className={tagStyles.tagContainer}>
-                    {speciesData.transmission.mediums?.map((medium, index) => ( // 添加空检查
+                    {speciesData.transmission.mediums?.map((medium, index) => (
                          <Tag
-                            key={index}
+                            key={`${medium.name}-${index}`}
                             text={medium.name}
                             type={getMediumTagType(medium.type)}
                             tooltip={`${medium.type === 'Vector' ? '传播媒介' : '其他途径'} - ${medium.method}`}
@@ -272,19 +256,20 @@ export default async function SpeciesDetailPage({
 
         <aside className={styles.sideInfoColumn}>
             <InfoSection title="快速概览" icon={faBolt} className={styles.stickyCard}>
-                <dl className={styles.quickFactsList}>
-                    {/* 确保从 speciesData 读取数据 */}
-                    {speciesData.taxonomy && speciesData.taxonomy.length > 1 && <div><dt><FontAwesomeIcon icon={faSitemap} />主要分类:</dt><dd>{speciesData.taxonomy[1]?.name || speciesData.taxonomy[0]?.name}</dd></div>}
-                    {speciesData.taxonomicUnit && <div><dt><FontAwesomeIcon icon={faTags} />分类层级:</dt><dd>{speciesData.taxonomicUnit}</dd></div>}
-                    <div>
+                 <dl className={styles.quickFactsList}>
+                     {speciesData.taxonomy && speciesData.taxonomy.length > 0 &&
+                         <div><dt><FontAwesomeIcon icon={faSitemap} />主要分类:</dt><dd>{speciesData.taxonomy[1]?.name || speciesData.taxonomy[0]?.name}</dd></div>
+                     }
+                     {speciesData.taxonomicUnit && <div><dt><FontAwesomeIcon icon={faTags} />分类层级:</dt><dd>{speciesData.taxonomicUnit}</dd></div>}
+                     <div>
                       <dt><FontAwesomeIcon icon={faCheckCircle} />确认状态:</dt>
                       <dd className={`${styles.statusText} ${styles['status'+(speciesData.status?.charAt(0).toUpperCase() + speciesData.status?.slice(1))]}`}>
                         {speciesData.statusText}
                       </dd>
                     </div>
-                    {speciesData.transmission?.mediums && speciesData.transmission.mediums.length > 0 && <div><dt><FontAwesomeIcon icon={faExchangeAlt} />主要传播:</dt><dd>{speciesData.transmission.mediums.slice(0, 2).map(m => m.name).join(', ')}</dd></div>}
-                    {speciesData.host?.hosts && speciesData.host.hosts.length > 0 && <div><dt><FontAwesomeIcon icon={faTree} />主要寄主:</dt><dd>{speciesData.host.hosts[0].name}</dd></div>}
-                    {speciesData.management?.methods && speciesData.management.methods.length > 0 && <div><dt><FontAwesomeIcon icon={faShieldAlt} />核心防治:</dt><dd>{speciesData.management.methods[0]?.split(':')[0]}</dd></div>}
+                    {speciesData.transmission && <div><dt><FontAwesomeIcon icon={faExchangeAlt} />主要传播:</dt><dd>{speciesData.transmission.mediums?.slice(0, 2).map(m => m.name).join(', ')}</dd></div>}
+                    {speciesData.host && <div><dt><FontAwesomeIcon icon={faTree} />主要寄主:</dt><dd>{speciesData.host.hosts?.slice(0,1).map(h=>h.name)?.join('') || '未知'}</dd></div>}
+                    {speciesData.management && <div><dt><FontAwesomeIcon icon={faShieldAlt} />核心防治:</dt><dd>{speciesData.management.methods?.slice(0, 2).join(', ')}</dd></div>}
                 </dl>
             </InfoSection>
 

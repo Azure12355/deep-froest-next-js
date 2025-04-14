@@ -5,7 +5,7 @@ import styles from '../KnowledgeGraph.module.css'; // 引入页面样式
 import { EChartClickParams } from '../types';
 
 interface GraphVisualizationProps {
-    chartOption: echarts.EChartsOption; // 主图谱的配置项
+    chartOption: any; // 主图谱的配置项
     isLoading: boolean;                 // 是否正在加载
     onChartClick: (params: EChartClickParams) => void; // 图表点击事件回调
 }

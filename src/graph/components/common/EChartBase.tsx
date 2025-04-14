@@ -16,7 +16,7 @@ echarts.use([
 ]);
 
 interface EChartBaseProps {
-    option: echarts.EChartsOption;      // ECharts 配置项
+    option: any;      // ECharts 配置项
     style?: React.CSSProperties;        // 图表容器样式
     className?: string;                 // 图表容器 CSS 类名
     theme?: string | object;            // ECharts 主题
@@ -37,7 +37,7 @@ export interface EChartBaseRef {
 const EChartBase = forwardRef<EChartBaseRef, EChartBaseProps>(
     ({ option, style, className, theme, showLoading, onEvents }, ref) => {
         const chartRef = useRef<HTMLDivElement>(null); // 用于引用图表容器 DOM
-        const chartInstanceRef = useRef<echarts.ECharts>(); // 用于存储 ECharts 实例
+        const chartInstanceRef = useRef<echarts.ECharts | undefined>(undefined); // Used to store ECharts instance
 
         // 防抖的 resize 函数
         const debouncedResize = useRef(

@@ -8,7 +8,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 interface MiniChartCardProps {
     title: string;                  // 卡片标题
     icon: IconProp;                 // 卡片图标 (FontAwesome)
-    chartOption: echarts.EChartsOption; // ECharts 配置
+    chartOption: any; // ECharts 配置
     isLoading?: boolean;             // 是否显示加载状态
 }
 

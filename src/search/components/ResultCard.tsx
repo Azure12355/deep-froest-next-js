@@ -127,7 +127,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
           {/* legacyBehavior 和 <a> 标签是为了让样式能正确应用到 Link 上 */}
           {/* 如果样式直接应用在 Link 上有问题，可以使用这种方式 */}
           {/* 也可以尝试直接给 Link 加 className */}
-          <a onClick={handleButtonClick} className={styles.detailsButton} style={{textDecoration: 'none'}}>
+          <a onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleButtonClick(e as any)} className={styles.detailsButton} style={{textDecoration: 'none'}}>
             {buttonText} <FontAwesomeIcon icon={faArrowRight} className={styles.buttonIcon}/>
           </a>
         </Link>
