@@ -1,27 +1,31 @@
 // src/search/components/FilterActions.tsx
-"use client"; // <--- 添加此行，标记为客户端组件
+"use client";
 
 import React from 'react';
 import styles from './FilterActions.module.css';
 
+// 定义 Props 类型
+interface FilterActionsProps {
+    onReset: () => void;  // 清空筛选的回调
+    onApply: () => void;  // 应用筛选的回调
+}
+
 /**
  * 筛选操作按钮组件 (清空、应用)
- * @description 因为包含按钮点击事件 (onClick)，需要标记为客户端组件。
  */
-const FilterActions: React.FC = () => {
+const FilterActions: React.FC<FilterActionsProps> = ({ onReset, onApply }) => {
   const handleReset = () => {
-    console.log('清空筛选条件...');
-    // TODO: 实现清空逻辑
+    console.log('清空筛选条件按钮点击');
+    onReset(); // 调用父组件传递的回调
   };
 
   const handleApply = () => {
-    console.log('应用筛选条件...');
-    // TODO: 实现应用筛选逻辑
+    console.log('应用筛选条件按钮点击');
+    onApply(); // 调用父组件传递的回调
   };
 
   return (
     <div className={styles.filterActions}>
-      {/* onClick 事件处理器现在可以在客户端组件中正常使用 */}
       <button className={styles.resetButton} onClick={handleReset}>
         清空筛选
       </button>

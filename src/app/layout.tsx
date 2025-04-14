@@ -25,11 +25,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN"> {/* 设置语言为中文 */}
+    // **修复：确保 <html> 和 <body> 标签紧密相连，没有空格或换行**
+    <html lang="en">{/* 设置语言为中文 */}
       <body className={inter.className}>
          {/* 渲染全局 Header */}
          <Header />
          {/* 主要页面内容区域 */}
+         {/* 添加一个 key 到 main 元素可能有助于 React 更可靠地处理 hydration，
+             尤其是在布局可能因路由变化而改变时。但通常不是必需的。
+             可以尝试添加 key={Math.random()} 或基于路由的 key */}
          <main style={{ paddingTop: HEADER_HEIGHT }}> {/* 添加内边距，防止内容被 Header 遮挡 */}
            {children}
          </main>
