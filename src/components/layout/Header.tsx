@@ -1,29 +1,33 @@
 // src/components/layout/Header.tsx
-'use client'; // 因为用到了 Ant Design 的交互组件，标记为客户端组件
+'use client';
 
-import React, { useState, useEffect } from 'react'; // 引入 useEffect
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image'; // 用于 Logo 图片
-import { usePathname } from 'next/navigation'; // 用于获取当前路由，高亮导航项
-import { Layout, Menu, Button, Avatar, Badge, Dropdown, Space, MenuProps } from 'antd';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { Layout, Menu, Button, Avatar, Badge, Dropdown, Space, MenuProps, Tooltip, Drawer } from 'antd';
 import {
-  RobotOutlined,         // 智能问答
-  AreaChartOutlined,    // 数据分析
-  ApartmentOutlined,    // 知识图谱
-  SearchOutlined,       // 知识检索
-  FormOutlined,         // 数据录入
-  MoreOutlined,         // 更多
-  CrownOutlined,        // VIP / 会员
-  AppstoreAddOutlined,  // 企业服务
-  BellOutlined,         // 通知
-  UserOutlined,         // 用户头像
+  RobotOutlined,
+  AreaChartOutlined,
+  ApartmentOutlined,
+  SearchOutlined,
+  FormOutlined,
+  MoreOutlined,
+  BellOutlined,
+  UserOutlined,
+  GithubOutlined,
+  BookOutlined,
+  QuestionCircleOutlined,
+  StarOutlined,
+  BugOutlined,
+  TeamOutlined,
+  MenuOutlined,
 } from '@ant-design/icons';
-import styles from './Header.module.css'; // 引入 CSS Module
-import { GitHub } from 'react-feather';
+import styles from './Header.module.css';
 
-const { Header: AntHeader } = Layout; // 从 Ant Design 引入 Header 组件，避免命名冲突
+const { Header: AntHeader } = Layout;
 
-// 导航项定义
+// 导航项定义 (保持不变)
 const mainNavItems = [
   { key: '/chat', icon: <RobotOutlined />, label: '智能问答', path: '/chat' },
   { key: '/analysis', icon: <AreaChartOutlined />, label: '数据分析', path: '/analysis' },
@@ -32,110 +36,158 @@ const mainNavItems = [
   { key: '/entry', icon: <FormOutlined />, label: '数据录入', path: '/entry' },
 ];
 
-// 更多选项的下拉菜单项 (示例)
-// **注意:** 如果这个 Dropdown 也需要使用，同样需要将 overlay 改为 menu
-const moreMenuItems: MenuProps['items'] = [
-  { key: 'help', label: '帮助中心' },
-  { key: 'feedback', label: '意见反馈' },
-];
-
-// 用户菜单项 (示例 - 结构已符合 menu prop 要求)
+// 用户菜单项 (保持不变)
 const userMenuItems: MenuProps['items'] = [
-  { key: 'profile', label: '个人中心' },
-  { key: 'settings', label: '账户设置' },
-  { type: 'divider' }, // 分隔线
-  { key: 'logout', label: '退出登录', danger: true }, // danger 样式
+   { key: 'profile', label: '个人中心' },
+   { key: 'settings', label: '账户设置' },
+   { type: 'divider' },
+   { key: 'logout', label: '退出登录', danger: true },
 ];
 
 /**
- * 全局页头组件 - 微软小清新风格
+ * 全局页头组件 - 修复移动端抽屉菜单点击即关闭的问题
  */
 const Header: React.FC = () => {
-  const pathname = usePathname(); // 获取当前路径
-
-  // 使用 useEffect 来在 pathname 变化时更新 current 状态
-  // 避免 hydration 错误，因为 pathname 初始在服务器端可能与客户端不同
+  const pathname = usePathname();
   const [current, setCurrent] = useState<string>('');
-  useEffect(() => {
-      const getActiveKey = () => {
-          const currentTopLevelPath = '/' + (pathname?.split('/')[1] || '');
-          const activeItem = mainNavItems.find(item => item.path === currentTopLevelPath);
-          return activeItem ? activeItem.key : '';
-      };
-      setCurrent(getActiveKey());
-  }, [pathname]); // 依赖 pathname
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
-  // 导航菜单点击事件
+  // 更新导航高亮状态
+  useEffect(() => {
+    const getActiveKey = () => {
+      const exactMatch = mainNavItems.find(item => item.path === pathname);
+      if (exactMatch) return exactMatch.key;
+      const currentTopLevelPath = '/' + (pathname?.split('/')[1] || '');
+      const topLevelMatch = mainNavItems.find(item => item.path === currentTopLevelPath);
+      return topLevelMatch ? topLevelMatch.key : '';
+    };
+    setCurrent(getActiveKey());
+    // **移除路由变化时关闭抽屉的逻辑，避免干扰用户操作**
+    // if (drawerVisible) {
+    //     setDrawerVisible(false);
+    // }
+  }, [pathname]); // **移除 drawerVisible 依赖**
+
+  // --- 事件处理 ---
+
+  /**
+   * 处理导航菜单项点击事件 (仅更新高亮状态)
+   * @param e - Antd Menu 点击事件对象
+   */
   const handleNavClick: MenuProps['onClick'] = (e) => {
-    console.log('Navigating to:', e.key);
-    setCurrent(e.key); // 点击时也更新高亮状态
+    console.log('[Header] Nav item clicked, setting current key:', e.key);
+    setCurrent(e.key);
+    // **核心修复：移除在此处关闭抽屉的逻辑**
+    // if (drawerVisible) {
+    //     setDrawerVisible(false); // <-- 移除这行
+    // }
   };
 
-  // 渲染导航菜单项，包裹在 Link 组件中
-  const renderNavItems = () => {
+  // 打开抽屉菜单
+  const showDrawer = () => {
+    setDrawerVisible(true);
+  };
+
+  // 关闭抽屉菜单
+  const closeDrawer = () => {
+    setDrawerVisible(false);
+  };
+
+  /**
+   * 渲染导航菜单项
+   * @param isDrawer - 是否在抽屉内渲染 (用于决定是否添加关闭抽屉的 onClick)
+   * @returns Antd Menu items 配置数组
+   */
+  const renderNavItems = (isDrawer = false) => {
     return mainNavItems.map(item => ({
       key: item.key,
       icon: item.icon,
-      // 使用 Link 作为 label，Antd Menu 会处理内部的 a 标签
-      label: <Link href={item.path}>{item.label}</Link>,
+      label: (
+        // **为抽屉内的 Link 添加 onClick 事件来关闭抽屉**
+        <Link href={item.path} onClick={isDrawer ? closeDrawer : undefined}>
+          {item.label}
+        </Link>
+      ),
     }));
   };
 
-  // 用户菜单 - **不需要再额外用 <Menu> 包裹**
-  // const userMenu = (
-  //   <Menu items={userMenuItems} />
-  // ); // 这一步不再需要，直接传递 items 数组
-
   return (
-    <AntHeader className={styles.appHeader}>
-      {/* 左侧区域: Logo + 主导航 */}
-      <div className={styles.leftSection}>
-        {/* 1.1 Logo */}
-        <Link href="/" className={styles.logo}>
-          {/* 临时使用 next.svg，替换为你自己的 Logo */}
-          <Image src="/next.svg" alt="DeepForest Logo" width={32} height={32} className={styles.logoIcon} />
-          <span className={styles.logoText}>DeepForest</span>
-        </Link>
+    <>
+      <AntHeader className={styles.appHeader}>
+        {/* --- 左侧区域 --- */}
+        <div className={styles.leftSection}>
+           {/* 汉堡菜单按钮: 通过 CSS 在小屏幕显示 */}
+           <Button
+              type="text"
+              icon={<MenuOutlined style={{ fontSize: '18px' }} />}
+              onClick={showDrawer}
+              className={`${styles.menuToggleBtn} ${styles.showOnMobile}`}
+              aria-label="打开导航菜单"
+           />
 
-        {/* 1.2 主导航链接 */}
+          <Link href="/" className={styles.logo}>
+            <Image src="/next.svg" alt="DeepForest Logo" width={30} height={30} className={styles.logoIcon} priority />
+            <span className={`${styles.logoText} ${styles.hideOnMobile}`}>DeepForest</span>
+          </Link>
+
+          {/* 顶部导航 Menu: 始终渲染，通过 CSS 在移动端隐藏 */}
+          <Menu
+              theme="light"
+              mode="horizontal"
+              selectedKeys={[current]}
+              onClick={handleNavClick} // *现在只更新 current 状态*
+              items={renderNavItems()} // *渲染时不需特殊处理*
+              className={`${styles.mainNav} ${styles.hideOnMobile}`}
+              overflowedIndicator={<MoreOutlined style={{ fontSize: '16px', padding: '0 8px' }} />}
+          />
+        </div>
+
+        {/* --- 右侧区域 (保持不变) --- */}
+        <div className={styles.rightSection}>
+          <Space size="small" wrap className={styles.actionSpace}>
+            {/* ... 开源按钮等保持不变 ... */}
+             <Tooltip title="GitHub 仓库"><Button type="default" shape="circle" icon={<GithubOutlined />} href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.githubButton}`} aria-label="GitHub Repository"/></Tooltip>
+             <Tooltip title="提交 Issue 或反馈"><Button type="default" shape="circle" icon={<BugOutlined />} href="https://github.com/your-repo/issues" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.issueButton}`} aria-label="Report an issue"/></Tooltip>
+             <Tooltip title="查看文档"><Button type="text" icon={<BookOutlined />} href="/docs" className={`${styles.actionButton} ${styles.hideOnMobile}`} aria-label="Documentation">文档</Button></Tooltip>
+             <Tooltip title="查看文档"><Button type="text" icon={<BookOutlined />} href="/docs" className={`${styles.actionButton} ${styles.showOnMobileOnly}`} aria-label="Documentation"/></Tooltip>
+             <Tooltip title="加入社区讨论 (Discord)"><Button type="text" icon={<TeamOutlined />} href="https://discord.gg/your-invite" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.hideOnSmallMobile}`} aria-label="Join Community">社区</Button></Tooltip>
+             <Tooltip title="加入社区讨论 (Discord)"><Button type="text" icon={<TeamOutlined />} href="https://discord.gg/your-invite" target="_blank" rel="noopener noreferrer" className={`${styles.actionButton} ${styles.showOnSmallMobileOnly}`} aria-label="Join Community"/></Tooltip>
+             <Tooltip title="通知"><Badge count={5} size="small" offset={[-3, 3]}><Avatar shape="circle" icon={<BellOutlined />} className={styles.actionIcon} /></Badge></Tooltip>
+             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" arrow={{ pointAtCenter: true }} trigger={['click']}>
+               <Avatar shape="circle" icon={<UserOutlined />} className={styles.userAvatar} style={{ cursor: 'pointer' }}/>
+             </Dropdown>
+          </Space>
+        </div>
+      </AntHeader>
+
+      {/* --- 抽屉菜单 --- */}
+      <Drawer
+        title={
+            <Link href="/" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration:'none' }}>
+               <Image src="/next.svg" alt="DeepForest Logo" width={24} height={24} />
+               <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-color-primary)'}}>DeepForest</span>
+            </Link>
+        }
+        placement="left"
+        closable={true}
+        onClose={closeDrawer} // 点击关闭图标或遮罩层时关闭
+        open={drawerVisible}
+        key="left-drawer"
+        bodyStyle={{ padding: '16px 0' }}
+        width={260}
+        className={styles.mobileDrawer}
+      >
+        {/* 抽屉内的 Menu */}
         <Menu
-          theme="light"
-          mode="horizontal"
+          mode="inline"
           selectedKeys={[current]}
-          onClick={handleNavClick}
-          items={renderNavItems()}
-          className={styles.mainNav}
-          overflowedIndicator={<MoreOutlined />} // 响应式菜单指示器
+          onClick={handleNavClick} // *仍然调用 handleNavClick 更新高亮*
+          // **核心修复：现在 items 是通过 renderNavItems(true) 生成的，Link 上自带了 onClick={closeDrawer}**
+          items={renderNavItems(true)}
+          style={{ borderRight: 0 }}
         />
-      </div>
-
-      {/* 右侧区域: 操作按钮 + 通知 + 用户 */}
-      <div className={styles.rightSection}>
-        <Space size="middle"> {/* 使用 Space 控制间距 */}
-          {/* 1.4 会员开通按钮 */}
-          <Button type="primary" icon={<GitHub />} className={styles.vipButton}>
-            参与贡献 
-          </Button>
-
-          {/* 1.5 企业服务按钮 */}
-          <Button icon={<AppstoreAddOutlined />} className={styles.actionButton}>
-            
-          </Button>
-
-          {/* 1.6 通知中心图标 */}
-          <Badge count={5} size="small">
-            <Avatar shape="circle" icon={<BellOutlined />} className={styles.actionIcon} />
-          </Badge>
-
-          {/* 1.7 用户头像/菜单 */}
-          {/* **修复：将 overlay={userMenu} 修改为 menu={{ items: userMenuItems }}** */}
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-             {/* 头像作为触发器 */}
-             <Avatar shape="circle" icon={<UserOutlined />} className={styles.userAvatar} style={{ cursor: 'pointer' }}/>
-          </Dropdown>
-        </Space>
-      </div>
-    </AntHeader>
+      </Drawer>
+    </>
   );
 };
 
