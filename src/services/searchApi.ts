@@ -1,154 +1,74 @@
 // src/services/searchApi.ts
-import axios from 'axios';
-// 引入前端类型
+import axiosInstance, { API_BASE_URL } from '@/lib/axiosInstance'; // ** 1. 导入共享实例和 BASE_URL 字符串 **
 import type { SpeciesDetailData } from '@/search/detail/types';
-import type { SearchResultItemVO, PageVO } from './apiTypes'; // 引入下面定义的类型
+import type { SearchResultItemVO, PageVO } from './apiTypes';
 
-// --- API 相关类型定义 ---
-// 保持与后端 VO 结构一致
-
-// 单个搜索结果项 (对应 SearchResultItemVO)
-export interface SearchResultItem {
-    id: string;
-    type: 'species' | 'document';
-    icon?: string; // 后端现在不强制返回，前端可以根据 type 处理
-    title: string;
-    scientificName?: string;
-    classification?: string;
-    status?: string;
-    statusType?: string; // confirmed, pending, default
-    author?: string;
-    description: string;
-    tags: string[];
-    detailLink: string;
-}
-
-// 分页响应结构 (对应 PageVO)
-export interface PaginatedResponse<T> {
-    records: T[];
-    total: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
-}
-
-// 搜索请求参数接口 (对应 SearchRequest)
+// 搜索请求参数接口
 export interface SearchParams {
     query?: string;
     page?: number;
     pageSize?: number;
-    type?: 'species' | 'document'; // 添加类型过滤
+    type?: 'species' | 'document';
     classification?: string;
     status?: string;
-    taxonomicLevel?: string; // 注意属性名一致性 (后端是 taxonomicLevel)
+    taxonomicLevel?: string;
     continent?: string;
     country?: string;
     province?: string;
-    hostName?: string; // 注意属性名一致性
+    hostName?: string;
     hostType?: string;
     refType?: string;
     pubYear?: number;
 }
 
-
-// --- API 调用函数 ---
-
-let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api';
-API_BASE_URL += "/search"
-
-// 定义后端通用响应体结构
-interface BackendBaseResponse<T> {
-    code: number;
-    message: string;
-    data: T | null;
-}
-
 /**
  * 调用后端 API 执行搜索
- *
- * @param params 搜索参数 (包含查询、过滤、分页)
- * @returns Promise<PaginatedResponse<SearchResultItem>> 返回分页后的搜索结果
- * @throws 如果 API 请求失败或返回错误码，则抛出错误
+ * @param params 搜索参数
+ * @returns Promise<PageVO<SearchResultItemVO>>
  */
-export const fetchSearchResults = async (params: SearchParams): Promise<PaginatedResponse<SearchResultItem>> => {
+export const fetchSearchResults = async (params: SearchParams): Promise<PageVO<SearchResultItemVO>> => {
     try {
-        console.log('发起搜索请求:', params);
-        // 使用 URLSearchParams 来构建查询字符串，自动处理 undefined 参数
+        console.log('发起搜索请求, Params:', params);
         const searchParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== '') {
-                 // 将驼峰命名转换为下划线命名以匹配后端 SearchRequest (如果需要)
-                 // 这里假设后端 @ModelAttribute 能自动处理，或者后端 DTO 使用驼峰命名
-                 // 如果后端严格要求下划线，则需要转换 key
-                 // const backendKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-                 searchParams.append(key, String(value));
+                searchParams.append(key, String(value));
             }
         });
 
-        const response = await axios.get<BackendBaseResponse<PaginatedResponse<SearchResultItem>>>(
-             API_BASE_URL,
-             { params: searchParams } // 将参数对象传递给 axios 的 params 选项
-        );
-
-        if (response.data && response.data.code === 0 && response.data.data) {
-            console.log(`搜索成功: 共 ${response.data.data.total} 条结果, 当前页 ${response.data.data.page}/${response.data.data.totalPages}`);
-            return response.data.data;
-        } else {
-            const errorMessage = `搜索失败: ${response.data?.message || '未知错误'} (业务码: ${response.data?.code})`;
-            console.error(errorMessage, response.data);
-            throw new Error(errorMessage);
-        }
-    } catch (error) {
-        console.error('请求 /api/search 时发生网络或服务器错误:', error);
-        if (axios.isAxiosError(error)) {
-            throw new Error(`网络错误: ${error.message}${error.response ? ` (状态码: ${error.response.status})` : ''}`);
-        } else if (error instanceof Error) {
-             throw new Error(`搜索时发生错误: ${error.message}`);
-        } else {
-            throw new Error(`搜索时发生未知错误: ${String(error)}`);
-        }
+        // ** 2. 使用共享实例，传递相对路径和参数 **
+        // 基础 URL 是 /api, 这里路径是 /search
+        const responseData = await axiosInstance.get<PageVO<SearchResultItemVO>>('/search', { params: searchParams });
+        console.log(`搜索成功: 共 ${responseData.data.total} 条结果, 当前页 ${responseData.data.page}/${responseData.data.totalPages}`);
+        return responseData.data;
+    } catch (error: any) {
+        // ** 3. 错误处理 **
+        console.error('搜索请求失败:', error);
+        throw new Error(`搜索失败: ${error.message || '未知错误'}`);
     }
 };
 
 /**
  * 调用后端 API 获取物种详细信息
- *
  * @param speciesId 物种 ID
- * @returns Promise<SpeciesDetailData> 返回物种详情数据
- * @throws 如果 API 请求失败、物种未找到或返回错误码，则抛出错误
+ * @returns Promise<SpeciesDetailData>
  */
 export const fetchSpeciesDetail = async (speciesId: string): Promise<SpeciesDetailData> => {
-    if (!speciesId) {
-        throw new Error("物种 ID 不能为空");
-    }
+    if (!speciesId) { throw new Error("物种 ID 不能为空"); }
     try {
-        console.log(`正在请求物种详情: GET ${API_BASE_URL}/species/${speciesId}`);
-        const response = await axios.get<BackendBaseResponse<SpeciesDetailData>>(`${API_BASE_URL}/species/${speciesId}`);
-
-        if (response.data && response.data.code === 0 && response.data.data) {
-            console.log(`成功获取物种 ${speciesId} 的详情`);
-            return response.data.data;
-        } else if (response.data && response.data.code === 40400) { // 后端定义的“未找到”错误码
-             console.warn(`物种 ${speciesId} 未找到`);
-             throw new Error(response.data.message); // 抛出后端返回的“未找到”消息
-        } else {
-            const errorMessage = `获取物种详情失败: ${response.data?.message || '未知错误'} (业务码: ${response.data?.code})`;
-            console.error(errorMessage, response.data);
-            throw new Error(errorMessage);
+        console.log(`请求物种详情, ID: ${speciesId}`);
+        // ** 2. 使用共享实例，传递相对路径 **
+        // 基础 URL 是 /api, 这里路径是 /search/species/{id}
+        const detailData = await axiosInstance.get<SpeciesDetailData>(`/search/species/${speciesId}`);
+        console.log(`成功获取物种 ${speciesId} 的详情`);
+        return detailData.data;
+    } catch (error: any) {
+        // ** 3. 错误处理 (拦截器会处理大部分，这里捕获最终的) **
+        console.error(`获取物种详情 ${speciesId} 失败:`, error);
+        // 重新抛出更具体的错误信息
+        if (error.message?.includes("未找到")) { // 检查拦截器或 Axios 返回的 404 信息
+            throw new Error(`未找到指定ID的物种信息 (ID: ${speciesId})`);
         }
-    } catch (error) {
-        console.error(`请求 ${API_BASE_URL}/species/${speciesId} 时发生网络或服务器错误:`, error);
-         if (axios.isAxiosError(error) && error.response?.status === 404) {
-             // 如果 axios 返回 404，也认为是未找到
-              throw new Error(`未找到指定ID的物种信息 (ID: ${speciesId})`);
-         } else if (error instanceof Error) {
-             // 如果是 fetchSpeciesDetail 内部抛出的错误（如“未找到”），直接 re-throw
-             if (error.message.includes("未找到")) {
-                  throw error;
-             }
-             throw new Error(`获取物种详情时发生错误: ${error.message}`);
-        } else {
-            throw new Error(`获取物种详情时发生未知错误: ${String(error)}`);
-        }
+        throw new Error(`获取物种详情失败: ${error.message || '未知错误'}`);
     }
 };
