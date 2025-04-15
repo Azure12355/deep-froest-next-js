@@ -46,7 +46,7 @@ export interface SseEventData {
 
 
 // 后端 API 的基础 URL (应从环境变量读取)
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api/chat';
+let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api';
 
 /**
  * 将后端的 DTO 转换为前端的类型 (如果需要)
@@ -78,7 +78,7 @@ function mapChatMessageDtoToChatMessage(dto: ChatMessageDto): ChatMessage {
  */
 export const fetchChatHistory = async (): Promise<HistoryGroupData[]> => {
     try {
-        const response = await axios.get<HistoryGroupDto[]>(`${API_BASE_URL}/history`);
+        const response = await axios.get<HistoryGroupDto[]>(`${API_BASE_URL}/chat/history`);
         // 这里假设 HistoryGroupDto 和 HistoryGroupData 结构一致
         // 如果不一致，需要添加映射逻辑
         return response.data;
@@ -95,7 +95,7 @@ export const fetchChatHistory = async (): Promise<HistoryGroupData[]> => {
  */
 export const fetchChatMessages = async (chatId: string): Promise<ChatMessage[]> => {
     try {
-        const response = await axios.get<ChatMessageDto[]>(`${API_BASE_URL}/${chatId}/messages`);
+        const response = await axios.get<ChatMessageDto[]>(`${API_BASE_URL}/chat/${chatId}/messages`);
         // 将 DTO 映射为前端类型
         return response.data.map(mapChatMessageDtoToChatMessage);
     } catch (error) {
@@ -132,7 +132,7 @@ export const sendMessageWithSse = async (
     });
 
     try {
-        const response = await fetch(`${API_BASE_URL}/message`, {
+        const response = await fetch(`${API_BASE_URL}/chat/message`, {
             method: 'POST',
             body: formData,
             // 不需要设置 Content-Type，浏览器会自动处理 FormData

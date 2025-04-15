@@ -16,7 +16,7 @@ interface BackendBaseResponse<T> {
 type GraphApiResponse = BackendBaseResponse<GraphData>; // 直接使用前端类型
 
 // API 基础 URL (根据实际后端部署情况调整)
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api/';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api';
 
 /**
  * 调用后端 API 获取知识图谱数据
