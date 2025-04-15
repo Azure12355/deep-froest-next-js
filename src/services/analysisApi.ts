@@ -19,7 +19,7 @@ type DashboardApiResponse = BackendBaseResponse<DashboardData>;
 // API 基础 URL (根据实际后端部署情况调整)
 // 在开发环境下，Next.js 可以配置代理来避免 CORS 问题
 // 在生产环境下，应配置 Nginx 或后端 CORS 设置
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8101/api/';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api/';
 
 /**
  * 调用后端 API 获取数据分析仪表盘数据

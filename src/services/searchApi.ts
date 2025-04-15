@@ -53,7 +53,7 @@ export interface SearchParams {
 
 // --- API 调用函数 ---
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8101/api/search';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api/search';
 
 // 定义后端通用响应体结构
 interface BackendBaseResponse<T> {

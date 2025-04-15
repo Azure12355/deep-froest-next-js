@@ -46,7 +46,7 @@ export interface SseEventData {
 
 
 // 后端 API 的基础 URL (应从环境变量读取)
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8101/api/chat';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://deepforest.weilanx.com:8101/api/chat';
 
 /**
  * 将后端的 DTO 转换为前端的类型 (如果需要)
