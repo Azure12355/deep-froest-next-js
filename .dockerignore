@@ -14,8 +14,6 @@ node_modules
 pnpm-debug.log*
 
 # 本地环境变量文件 (非常重要，不要将敏感信息打包进镜像!)
-.env*
-!.env.example # 可以保留示例文件
 
 # IDE 和操作系统文件
 .idea
