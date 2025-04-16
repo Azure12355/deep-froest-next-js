@@ -64,11 +64,11 @@
 }
 .mainNav :global(.ant-menu-item:hover),
 .mainNav :global(.ant-menu-submenu-title:hover) {
-  color: var(--primary-color, #1677ff) !important; background-color: rgba(22, 119, 255, 0.05) !important;
+  color: var(--primary-color, #10b981) !important; background-color: rgba(22, 119, 255, 0.05) !important;
 }
 .mainNav :global(.ant-menu-item-selected),
 .mainNav :global(.ant-menu-item-selected:hover) {
-  font-weight: 600 !important; color: var(--primary-color, #1677ff) !important;
+  font-weight: 600 !important; color: var(--primary-color, #10b981) !important;
   background-color: rgba(22, 119, 255, 0.08) !important;
 }
 /* 移除选中下划线 */
