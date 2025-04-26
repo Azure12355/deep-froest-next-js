@@ -1,623 +1,378 @@
 <!DOCTYPE html>
 <html lang="zh-CN" class="">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DeepForest - 智能林业病虫害问答与分析平台</title>
     <meta
-      name="description"
-      content="DeepForest 利用先进的AI技术、知识图谱和RAG，提供精准、高效的林业病虫害智能问答、分析与预警服务。"
+        name="description"
+        content="DeepForest 利用先进的AI技术、知识图谱和RAG，提供精准、高效的林业病虫害智能问答、分析与预警服务。"
     />
-
-    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌳</text></svg>">
-
-    <!-- Tailwind CSS -->
-    <link
-      href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css"
-      rel="stylesheet"
-    />
-    <!-- Font Awesome -->
-    <link
-      href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <!-- Google Fonts (Noto Sans SC for body, Noto Serif SC for headings) -->
+    <link href="https://cdn.staticfile.org/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <link href="https://cdn.staticfile.org/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased text-gray-700 dark:text-gray-300 transition-colors duration-300 overflow-x-hidden global-gradient-bg">
 
-    <style>
-      /* 基本样式和字体设置 */
-      body {
-        font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
-        @apply bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300;
-      }
-
-      /* 衬线字体用于标题 */
-      h1, h2, h3, h4, h5, h6, .font-serif {
-        font-family: 'Noto Serif SC', serif;
-      }
-
-      /* 隐藏滚动条 (如果需要更沉浸的体验) */
-      /* ::-webkit-scrollbar { display: none; }
-      body { -ms-overflow-style: none; scrollbar-width: none; } */
-
-      /* 自定义强调色 */
-      :root {
-        --primary-color: #10b981; /* 翡翠绿 */
-        --secondary-color: #065f46; /* 深绿 */
-        --accent-color: #f59e0b; /* 琥珀黄 */
-      }
-
-      .text-primary { color: var(--primary-color); }
-      .bg-primary { background-color: var(--primary-color); }
-      .border-primary { border-color: var(--primary-color); }
-      .text-secondary { color: var(--secondary-color); }
-      .bg-secondary { background-color: var(--secondary-color); }
-      .text-accent { color: var(--accent-color); }
-      .bg-accent { background-color: var(--accent-color); }
-
-      /* 暗色模式下的强调色调整 (可选) */
-      .dark .text-primary { color: #34d399; } /* 稍亮的绿色 */
-      .dark .bg-primary { background-color: #34d399; }
-      .dark .text-secondary { color: #a7f3d0; }
-      .dark .bg-secondary { background-color: #047857; }
-      .dark .text-accent { color: #fcd34d; }
-      .dark .bg-accent { background-color: #fcd34d; }
-
-      /* 渐变背景 */
-      .gradient-bg {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(6, 95, 70, 0.02) 100%);
-      }
-      .dark .gradient-bg {
-          background: linear-gradient(135deg, rgba(110, 231, 183, 0.08) 0%, rgba(5, 150, 105, 0.1) 100%);
-      }
-
-      /* 首字下沉效果示例 (需要手动应用到段落) */
-      .first-letter-drop::first-letter {
-        font-family: 'Noto Serif SC', serif;
-        font-size: 3em; /* 调整大小 */
-        float: left;
-        line-height: 0.8;
-        margin-right: 0.1em;
-        margin-bottom: -0.1em; /* 微调对齐 */
-        font-weight: 600;
-        color: var(--primary-color);
-      }
-      .dark .first-letter-drop::first-letter {
-          color: #34d399;
-      }
-
-      /* 按钮悬停微交互 */
-      .btn {
-          @apply inline-block px-6 py-3 rounded-md font-medium transition-all duration-300 ease-in-out shadow-sm;
-      }
-      .btn-primary {
-          @apply bg-primary text-white hover:bg-secondary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary;
-      }
-      .btn-secondary {
-          @apply bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500;
-      }
-
-       /* 特性卡片悬停效果 */
-      .feature-card {
-          @apply transform transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl;
-      }
-
-      /* Mermaid 图表容器 */
-      .mermaid {
-        @apply block mx-auto my-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow;
-        /* 确保宽度自适应 */
-        max-width: 100%;
-        overflow-x: auto; /* 防止内容溢出 */
-      }
-
-      /* 自定义暗色模式下的 Mermaid 样式 (需要配合 JS 初始化) */
-      [data-mermaid-theme="dark"] .node rect,
-      [data-mermaid-theme="dark"] .node circle,
-      [data-mermaid-theme="dark"] .node ellipse,
-      [data-mermaid-theme="dark"] .node polygon {
-        fill: #374151 !important; /* 暗色节点背景 */
-        stroke: #9ca3af !important; /* 暗色节点边框 */
-      }
-      [data-mermaid-theme="dark"] .node text {
-        fill: #f3f4f6 !important; /* 暗色节点文字 */
-      }
-      [data-mermaid-theme="dark"] .edgeLabel {
-        background-color: #1f2937 !important; /* 边标签背景 */
-        color: #d1d5db !important; /* 边标签文字 */
-      }
-       [data-mermaid-theme="dark"] .edgePath path {
-         stroke: #6b7280 !important; /* 边线颜色 */
-       }
-       [data-mermaid-theme="dark"] .arrowhead path {
-         fill: #6b7280 !important; /* 箭头颜色 */
-       }
-
-           /* 在 style 标签内添加按钮渐变样式 */
-    .btn-gradient-primary {
-      /* 鲜明的绿色渐变 */
-      background-image: linear-gradient(to right, #10b981 0%, #34d399 50%, #10b981 100%);
-      background-size: 200% auto; /* 用于悬停动画 */
-      border: none;
-    }
-    .dark .btn-gradient-primary {
-         background-image: linear-gradient(to right, #34d399 0%, #6ee7b7 50%, #34d399 100%);
-    }
-
-    .btn-gradient-primary:hover {
-      background-position: right center; /* 悬停时改变渐变位置 */
-      color: #fff;
-    }
-
-    .btn-gradient-secondary {
-      /* 柔和的灰/蓝绿渐变 (浅色模式) */
-      background-image: linear-gradient(to right, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
-       /* 或者使用稍微带点绿色的灰色 */
-      /* background-image: linear-gradient(to right, #e0f2f1 0%, #f0fdfa 50%, #e0f2f1 100%); */
-      background-size: 200% auto;
-      border: 1px solid #d1d5db; /* 浅灰色边框 */
-    }
-     .dark .btn-gradient-secondary {
-        /* 暗色模式下的灰/蓝绿渐变 */
-        background-image: linear-gradient(to right, #4272b5 0%, #3471d4 50%, #2f6dc4 100%);
-        border: 1px solid #4b5563;
-     }
-
-    .btn-gradient-secondary:hover {
-      background-position: right center;
-      /* border-color: #9ca3af; */ /* 悬停时边框加深 (可选) */
-      /* color: #1f2937; */ /* 悬停时文字加深 (可选) */
-      /* dark:border-color: #6b7280; */
-      /* dark:color: #e5e7eb; */
-    }
-
-    /* 确保基础 btn 类包含圆角等通用样式 */
-    .btn {
-        /* 之前的 btn 样式保持不变，主要是背景和颜色现在由 gradient 类控制 */
-        @apply inline-block px-6 py-3 /* 调整内边距以适应图标 */ rounded-full font-medium transition-all duration-300 ease-in-out shadow-sm;
-    }
-    .btn i { /* 图标基础样式 */
-        transition: transform 0.3s ease-in-out;
-    }
-    </style>
-  </head>
-  <body class="antialiased">
-
-    <!-- 导航栏与模式切换 -->
-    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo -->
-          <div class="flex-shrink-0 flex items-center">
-            <i class="fas fa-tree text-primary text-2xl mr-2"></i>
-            <span class="text-xl font-semibold font-serif text-gray-900 dark:text-white">DeepForest</span>
-          </div>
-          <!-- 导航链接 (如果需要) -->
-          <nav class="hidden md:flex space-x-8">
-            <a href="#about" class="text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors">关于我们</a>
-            <a href="#features" class="text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors">核心功能</a>
-            <a href="#tech" class="text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors">技术架构</a>
-            <a href="#contact" class="text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary transition-colors">联系我们</a>
-          </nav>
-          <!-- 模式切换按钮 -->
-          <div class="flex items-center">
-            <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 transition-colors">
-              <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-              <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 7.072l.707-.707a1 1 0 10-1.414-1.414l-.707.707a1 1 0 001.414 1.414zM3 11a1 1 0 100 2H2a1 1 0 100-2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-            </button>
-             <!-- GitHub Link (可选) -->
-             <a href="https://github.com/azure12355/deep-forest" target="_blank" rel="noopener noreferrer" class="ml-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                <i class="fab fa-github text-xl"></i>
-             </a>
-          </div>
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm dark:shadow-dark-sm transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="logo-area flex-shrink-0" data-aos="fade-right">
+                    <a href="#" class="flex items-center">
+                        <i class="fas fa-tree text-primary dark:text-primary-light text-2xl mr-2 animate-pulse"></i>
+                        <span class="text-xl font-semibold font-serif text-gray-900 dark:text-white">DeepForest</span>
+                    </a>
+                </div>
+                 <nav class="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
+                     <div class="flex space-x-1">
+                        <a href="#about" class="nav-link">关于我们</a>
+                        <a href="#features" class="nav-link">核心能力</a>
+                        <a href="#visualization" class="nav-link">运作流程</a>
+                        <a href="#tech" class="nav-link">技术栈</a>
+                         <a href="#benefits" class="nav-link">核心价值</a>
+                         <a href="#further-reading" class="nav-link">延伸探索</a>
+                        <a href="#contact" class="nav-link">联系我们</a>
+                    </div>
+                </nav>
+                <div class="actions-area flex-shrink-0 flex items-center space-x-3" data-aos="fade-left">
+                    <button id="theme-toggle" type="button" class="theme-toggle-button">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 7.072l.707-.707a1 1 0 10-1.414-1.414l-.707.707a1 1 0 001.414 1.414zM3 11a1 1 0 100 2H2a1 1 0 100-2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <a href="https://github.com/azure12355/deep-forest" target="_blank" rel="noopener noreferrer" class="github-link" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
     </header>
 
-    <main>
-      <!-- Hero Section -->
-      <section class="relative pt-16 pb-24 sm:pt-24 sm:pb-32 gradient-bg overflow-hidden">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div class="max-w-3xl mx-auto text-center">
-            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 shadow-sm">
-              <i class="fas fa-brain mr-1.5"></i> AI 赋能林业守护
-            </span>
-            <h1 class="mt-6 text-4xl font-bold font-serif tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
-              DeepForest <br><span class="text-primary" style="margin-top: 2rem; display: inline-block;">林业病虫害智能问答系统</span>
-            </h1>
-            <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              洞悉森林脉搏，精准应对病虫挑战。DeepForest 结合大模型、知识图谱与RAG技术，为您提供前所未有的林业病虫害智能问答与决策支持。
-            </p>
-            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-4">
-                <!-- 立即体验按钮 (主按钮 - 绿色渐变) -->
-                <a href="/chat" 
-                   class="btn btn-gradient-primary group inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-900">
-                    <i class="fas fa-rocket mr-2 transition-transform duration-300 group-hover:rotate-12"></i>
-                    立即体验
-                </a>
-                <!-- 开源地址按钮 (次按钮 - 灰色/蓝绿渐变) -->
-                <a href="https://github.com/azure12355/deep-forest"
-                   target="_blank" rel="noopener noreferrer"
-                   class="btn btn-gradient-secondary group inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold text-gray-700 dark:text-gray-200 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-gray-900">
-                   <i class="fab fa-github mr-2 transition-transform duration-300 group-hover:scale-110"></i>
-                    开源地址
-                </a>
-            </div>
-          </div>
-        </div>
-        <!-- Subtle background elements -->
-        <div class="absolute inset-0 mix-blend-multiply" aria-hidden="true">
-          <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent dark:from-gray-900/50 dark:to-transparent"></div>
-        </div>
-      </section>
-
-      <!-- About Section -->
-      <section id="about" class="py-16 sm:py-24 bg-white dark:bg-gray-800">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-            <div>
-              <h2 class="text-base font-semibold leading-7 text-primary">关于 DeepForest</h2>
-              <p class="mt-2 text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">守护绿色屏障的智能伙伴</p>
-              <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 first-letter-drop">
-                森林是地球之肺，维系着生态平衡。然而，日益严峻的病虫害问题威胁着森林健康与生物多样性。传统的病虫害识别、诊断和防治依赖大量专业知识和人力，响应速度慢，信息获取难。DeepForest 应运而生，旨在通过人工智能的力量，革新林业保护工作模式。
-              </p>
-              <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                我们整合海量文献、监测数据与专家知识，构建起庞大的林业知识图谱。基于先进的 DeepSeek 微调模型和 RAG 技术，DeepForest 能够理解您的自然语言提问，快速提供精准、可靠的病虫害信息、诊断建议和防治策略。
-              </p>
-            </div>
-            <div class="mt-10 lg:mt-0">
-              <img src="./forest.jpg" alt="健康的森林生态系统" class="rounded-lg shadow-lg aspect-video object-cover">
-              <!-- Replace with a more relevant image if possible -->
-               <p class="text-xs text-gray-500 dark:text-gray-400 text-right mt-1">图片示意：健康的森林生态</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section id="features" class="py-16 sm:py-24 gradient-bg">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-base font-semibold leading-7 text-secondary dark:text-green-300">核心能力</h2>
-            <p class="mt-2 text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">DeepForest 如何助您一臂之力</p>
-          </div>
-          <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <!-- Feature 1 -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md feature-card">
-              <div class="flex items-center mb-4">
-                <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 mr-4">
-                  <i class="fas fa-comments text-primary text-xl"></i>
-                </span>
-                <h3 class="text-lg font-semibold font-serif text-gray-900 dark:text-white">智能问答引擎</h3>
-              </div>
-              <p class="text-gray-600 dark:text-gray-300">
-                基于微调大模型与 RAG 技术，精准理解您的自然语言提问（包括文本、图片），快速给出病虫害识别、发生规律、防治方案等专业回答。
-              </p>
-            </div>
-            <!-- Feature 2 -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md feature-card">
-              <div class="flex items-center mb-4">
-                <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 mr-4">
-                  <i class="fas fa-project-diagram text-blue-600 dark:text-blue-400 text-xl"></i>
-                </span>
-                <h3 class="text-lg font-semibold font-serif text-gray-900 dark:text-white">林业知识图谱</h3>
-              </div>
-              <p class="text-gray-600 dark:text-gray-300">
-                整合海量数据构建的 Neo4j 知识图谱，可视化展示物种、病害、寄主、文献、地理分布间的复杂关系，提供深度洞察。
-              </p>
-            </div>
-            <!-- Feature 3 -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md feature-card">
-              <div class="flex items-center mb-4">
-                 <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900 mr-4">
-                  <i class="fas fa-database text-accent text-xl"></i>
-                </span>
-                <h3 class="text-lg font-semibold font-serif text-gray-900 dark:text-white">多源数据融合</h3>
-              </div>
-              <p class="text-gray-600 dark:text-gray-300">
-                高性能分布式爬虫持续汇聚最新文献、资讯和监测数据，结合结构化知识库，保证信息的时效性与全面性。
-              </p>
-            </div>
-            <!-- Add more features as needed -->
-          </div>
-        </div>
-      </section>
-
-      <!-- Technology Stack Section -->
-      <section id="tech" class="py-16 sm:py-24 bg-white dark:bg-gray-800">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-base font-semibold leading-7 text-primary">技术驱动</h2>
-                <p class="mt-2 text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">构建 DeepForest 的坚实基础</p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 text-center">
-                <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-shadow">
-                    <i class="fas fa-brain text-3xl text-purple-500 mb-2"></i>
-                    <span class="font-medium text-gray-700 dark:text-gray-200">DeepSeek LLM</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">微调大模型</span>
-                </div>
-                 <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-shadow">
-                    <i class="fas fa-book-reader text-3xl text-blue-500 mb-2"></i>
-                    <span class="font-medium text-gray-700 dark:text-gray-200">RAG</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">检索增强生成</span>
-                </div>
-                 <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-shadow">
-                    <i class="fas fa-share-alt text-3xl text-green-500 mb-2"></i>
-                    <span class="font-medium text-gray-700 dark:text-gray-200">Neo4j</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">知识图谱</span>
-                </div>
-                 <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-shadow">
-                    <i class="fab fa-react text-3xl text-cyan-500 mb-2"></i>
-                    <span class="font-medium text-gray-700 dark:text-gray-200">React/Next.js</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">前端框架</span>
-                </div>
-                 <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-shadow">
-                    <i class="fas fa-server text-3xl text-yellow-500 mb-2"></i>
-                    <span class="font-medium text-gray-700 dark:text-gray-200">Spring Boot</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">后端框架</span>
-                </div>
-                <!-- Add more tech items -->
-            </div>
-             <p class="text-center mt-8 text-gray-600 dark:text-gray-400">以及 Spring AI, Ant Design, ECharts, Python Scrapy 等先进技术栈。</p>
-        </div>
-    </section>
-
-      <!-- How it Works / Visualization Section -->
-      <section id="visualization" class="py-16 sm:py-24 gradient-bg">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-base font-semibold leading-7 text-secondary dark:text-green-300">运作流程</h2>
-            <p class="mt-2 text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">智能引擎的内在逻辑</p>
-             <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300">
-                 DeepForest 通过精密的流程整合数据、构建知识并生成智能回答，将复杂信息转化为您的决策依据。
-             </p>
-          </div>
-          <!-- Mermaid Diagram -->
-          <div class="mermaid max-w-4xl mx-auto">
-            graph LR
-            A[<i class='fas fa-spider'></i> 数据爬虫<br>Scrapy] -->|原始数据| B(数据清洗与处理);
-            B -->|结构化信息| C(Neo4j 知识图谱);
-            D[<i class='fas fa-database'></i> 外部数据库/API] -->|多源数据| C;
-            E{用户提问文本/图片};
-            E --> F[意图识别与查询生成];
-            F -->|结构化查询| C;
-            F -->|关键词/向量| G[<i class='fas fa-book'></i> 文档库 RAG];
-            C -->|图谱知识| H{<i class='fas fa-cogs'></i> RAG 融合模块};
-            G -->|相关文档片段| H;
-            H -->|增强上下文| I[<i class='fas fa-brain'></i> DeepSeek 微调模型];
-            I -->|智能回答| J[<i class='fas fa-desktop'></i> 用户界面 React/Next.js];
-
-            classDef default fill:#f9f9f9,stroke:#ddd,stroke-width:1px,color:#333;
-            classDef highlight fill:#e8f5e9,stroke:#a5d6a7,stroke-width:2px,color:#0d47a1;
-            classDef io fill:#e1f5fe,stroke:#81d4fa,stroke-width:1px,color:#01579b;
-            classDef ai fill:#ede7f6,stroke:#b39ddb,stroke-width:2px,color:#311b92;
-            classDef db fill:#fff3e0,stroke:#ffcc80,stroke-width:1px,color:#e65100;
-
-            class A,B db;
-            class C,G highlight;
-            class D,E io;
-            class F,H,I ai;
-            class J io;
-
-          </div>
-           <p class="text-center mt-4 text-sm text-gray-500 dark:text-gray-400">
-             (交互式图表示意，展示核心数据流与组件关系)
-           </p>
-        </div>
-      </section>
-
-       <!-- Benefits Section -->
-        <section id="benefits" class="py-16 sm:py-24 bg-white dark:bg-gray-800">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                 <div class="text-center mb-12">
-                    <h2 class="text-base font-semibold leading-7 text-primary">核心价值</h2>
-                    <p class="mt-2 text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">DeepForest 为您带来</p>
-                </div>
-                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
-                    <div class="relative pl-16">
-                        <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                                <i class="fas fa-bolt text-white text-xl"></i>
-                            </div>
-                            精准高效
-                        </dt>
-                        <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">快速响应您的查询，基于海量数据和 AI 模型提供准确可靠的病虫害信息和防治建议，显著提升工作效率。</dd>
-                    </div>
-                     <div class="relative pl-16">
-                        <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                                <i class="fas fa-microscope text-white text-xl"></i>
-                            </div>
-                            深度洞察
-                        </dt>
-                        <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">知识图谱揭示隐藏的关联，帮助您理解病虫害发生的深层原因、传播规律和潜在风险，辅助科学决策。</dd>
-                    </div>
-                     <div class="relative pl-16">
-                        <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                                <i class="fas fa-layer-group text-white text-xl"></i>
-                            </div>
-                            知识集成
-                        </dt>
-                        <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">打破信息孤岛，整合多源异构数据，构建动态更新的林业知识库，成为您权威的信息中心。</dd>
-                    </div>
-                     <div class="relative pl-16">
-                        <dt class="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                            <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                                <i class="fas fa-user-shield text-white text-xl"></i>
-                            </div>
-                            辅助决策
-                        </dt>
-                        <dd class="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">不仅提供信息，更能结合上下文进行分析、推理和预测，为防治策略制定、风险预警提供智能支持。</dd>
+    <!-- [修改] Reduced space-y values, adjust negative margin -->
+    <main class="relative z-10 space-y-16 md:space-y-20 lg:space-y-24">
+        <!-- Hero Section - [修改] Added min-h-screen, flex, items-center -->
+        <section class="hero-section relative overflow-hidden py-20 md:py-28 lg:py-32 -mt-16 md:-mt-20 lg:-mt-24 min-h-screen flex items-center">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                 <!-- [修改] Removed data-aos for GSAP control, added IDs -->
+                <div class="max-w-3xl mx-auto text-center">
+                    <span id="hero-badge" class="inline-flex items-center px-4 py-1 rounded-full text-base font-medium bg-green-100/80 dark:bg-green-900/70 text-green-800 dark:text-green-200 shadow-md dark:shadow-dark-md backdrop-blur-sm opacity-0">
+                        <i class="fas fa-brain mr-1.5"></i> AI 赋能林业守护
+                    </span>
+                    <h1 id="hero-title-main" class="mt-8 text-4xl font-bold font-serif tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl opacity-0">
+                        DeepForest
+                    </h1>
+                    <!-- [修改] Added span with class for gradient -->
+                    <h2 id="hero-title-sub" class="mt-4 text-3xl font-semibold font-serif tracking-tight text-gray-800 dark:text-gray-100 sm:text-4xl lg:text-5xl opacity-0">
+                        <span class="hero-subtitle-gradient">林业病虫害智能问答系统</span>
+                    </h2>
+                    <p id="hero-desc" class="mt-8 text-lg leading-relaxed text-gray-700 dark:text-gray-300 opacity-0">
+                         洞悉森林脉搏，精准应对病虫挑战。DeepForest 结合大模型、知识图谱与RAG技术，为您提供前所未有的林业病虫害智能问答与决策支持。
+                    </p>
+                    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6" data-aos="fade-up" data-aos-delay="200">
+                        <a href="/chat" class="btn btn-gradient-primary group text-lg px-8 py-3"><i class="fas fa-rocket mr-2 group-hover:rotate-12 transition-transform duration-300"></i> 立即体验</a>
+                        <a href="https://github.com/azure12355/deep-forest" target="_blank" rel="noopener noreferrer" class="btn btn-gradient-secondary group text-lg px-8 py-3"><i class="fab fa-github mr-2 group-hover:scale-110 transition-transform duration-300"></i> 开源地址</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Further Reading Section (Bonus) -->
-        <section id="further-reading" class="py-16 sm:py-24 gradient-bg">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                 <div class="text-center mb-10">
-                    <h2 class="text-base font-semibold leading-7 text-secondary dark:text-green-300">延伸探索</h2>
-                    <p class="mt-2 text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">深入了解相关领域</p>
+        <!-- About Section -->
+        <section id="about" class="section-padding">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center section-title-mb" data-aos="fade-up">
+                    <h2 class="subheading text-secondary dark:text-secondary-light">设计理念</h2>
+                    <p class="heading mt-2 text-gray-900 dark:text-white">洞悉森林脉搏，精准应对挑战。</p>
                 </div>
-                <div class="max-w-3xl mx-auto space-y-6">
-                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                         <h4 class="font-semibold text-gray-800 dark:text-gray-100"><i class="fas fa-book mr-2 text-primary"></i> 《森林昆虫学》</h4>
-                         <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">系统介绍森林昆虫分类、生态及主要害虫防治，是林业专业的基础读物。</p>
+                <div class="lg:grid lg:grid-cols-2 lg:gap-20 lg:items-center">
+                    <div data-aos="fade-right" class="about-text-panel">
+                        <h2 class="subheading text-primary dark:text-primary-light">关于 DeepForest</h2>
+                        <p class="heading mt-2 text-gray-900 dark:text-white">守护绿色屏障的智能伙伴</p>
+                        <p class="mt-6 text-lg leading-relaxed text-gray-700 dark:text-gray-300 first-letter-drop">
+                             森林是地球之肺，维系着生态平衡。然而，日益严峻的病虫害问题威胁着森林健康与生物多样性。传统的病虫害识别、诊断和防治依赖大量专业知识和人力，响应速度慢，信息获取难。
+                        </p>
+                        <p class="mt-6 text-lg leading-relaxed text-gray-700 dark:text-gray-300 first-letter-drop">
+                            林病智控，我们整合海量文献、监测数据与专家知识，构建起庞大的林业知识图谱。基于先进的 DeepSeek 微调模型和 RAG 技术，DeepForest 能够理解您的自然语言提问，快速提供精准、可靠的病虫害信息、诊断建议和防治策略。
+                       </p>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                         <h4 class="font-semibold text-gray-800 dark:text-gray-100"><i class="fas fa-seedling mr-2 text-primary"></i> 《森林病理学》</h4>
-                         <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">阐述森林病害的病原、发生规律和防治原理，涵盖真菌、细菌、病毒等多种病害类型。</p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                         <h4 class="font-semibold text-gray-800 dark:text-gray-100"><i class="fas fa-atlas mr-2 text-primary"></i> 《知识图谱：方法、实践与应用》</h4>
-                         <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">了解知识图谱构建、存储、查询和应用的核心技术，有助于理解 DeepForest 的图谱部分。</p>
-                    </div>
-                     <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                         <h4 class="font-semibold text-gray-800 dark:text-gray-100"><i class="fas fa-robot mr-2 text-primary"></i> "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" (Lewis et al., 2020)</h4>
-                         <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">介绍 RAG 模型的开创性论文，理解其如何结合检索与生成提升大模型表现。(<a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">arXiv Link</a>)</p>
-                    </div>
-                     <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                         <h4 class="font-semibold text-gray-800 dark:text-gray-100"><i class="fas fa-search mr-2 text-primary"></i> 《中国主要林业有害生物》</h4>
-                         <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">提供中国范围内主要林业病虫害的图文识别、分布和危害信息，是重要的参考工具书。</p>
+                    <div class="mt-12 lg:mt-0" data-aos="fade-left" data-aos-delay="100">
+                        <img src="./forest.jpg" alt="健康的森林生态系统" class="rounded-2xl shadow-xl dark:shadow-dark-xl aspect-video object-cover transform hover:scale-105 transition-transform duration-500 ease-in-out">
+                        <p class="text-xs text-gray-600 dark:text-gray-400 text-right mt-3">图片示意：健康的森林生态</p>
                     </div>
                 </div>
             </div>
         </section>
 
-      <!-- Call to Action / Contact Section -->
-      <section id="contact" class="py-16 sm:py-24 bg-gray-100 dark:bg-gray-800">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 class="text-3xl font-bold tracking-tight font-serif text-gray-900 dark:text-white sm:text-4xl">
-            准备好体验 DeepForest 了吗？
-          </h2>
-          <p class="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            无论是研究学习、林业管理还是病虫害防治，DeepForest 都能为您提供强大的智能支持。
-          </p>
-          <div class="mt-10 flex items-center justify-center gap-x-6">
-            <a href="#" class="btn btn-primary">申请试用 (敬请期待)</a>
-            <a href="mailto:contact@deepforest.example.com" class="btn btn-secondary">联系我们</a>
-          </div>
-        </div>
-      </section>
+        <!-- Features Section -->
+        <section id="features" class="section-padding">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center section-title-mb" data-aos="fade-up">
+                    <h2 class="subheading text-secondary dark:text-secondary-light">核心能力</h2>
+                    <p class="heading mt-2 text-gray-900 dark:text-white">DeepForest 如何助您一臂之力</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="flex items-start mb-4">
+                            <span class="icon-wrapper feature-icon-bg-1 mr-4 flex-shrink-0"><i class="fas fa-comments text-xl"></i></span>
+                            <h3 class="feature-title mt-1">智能问答引擎</h3>
+                        </div>
+                        <p class="feature-description">基于微调大模型与 RAG 技术，精准理解您的自然语言提问（包括文本、图片），快速给出病虫害识别、发生规律、防治方案等专业回答。</p>
+                    </div>
+                     <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="flex items-start mb-4">
+                             <span class="icon-wrapper feature-icon-bg-2 mr-4 flex-shrink-0"><i class="fas fa-project-diagram text-xl"></i></span>
+                            <h3 class="feature-title mt-1">林业知识图谱</h3>
+                        </div>
+                        <p class="feature-description">整合海量数据构建的 Neo4j 知识图谱，可视化展示物种、病害、寄主、文献、地理分布间的复杂关系，提供深度洞察。</p>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="flex items-start mb-4">
+                             <span class="icon-wrapper feature-icon-bg-3 mr-4 flex-shrink-0"><i class="fas fa-database text-xl"></i></span>
+                            <h3 class="feature-title mt-1">多源数据融合</h3>
+                        </div>
+                        <p class="feature-description">高性能分布式爬虫持续汇聚最新文献、资讯和监测数据，结合结构化知识库，保证信息的时效性与全面性。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it Works / Visualization Section -->
+        <!-- How it Works / Visualization Section -->
+        <section id="visualization" class="section-padding">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="text-center section-title-mb" data-aos="fade-up">
+                    <h2 class="subheading text-primary dark:text-primary-light">运作流程</h2>
+                    <p class="heading mt-2 text-gray-900 dark:text-white">智能引擎的内在逻辑</p>
+                    <p class="mt-6 max-w-2xl mx-auto text-lg leading-relaxed text-gray-700 dark:text-gray-300">DeepForest 通过精密的流程整合数据、构建知识并生成智能回答，将复杂信息转化为您的决策依据。</p>
+                </div>
+
+                <!-- [修改] New Flowchart Layout - Flexbox based -->
+                <div class="max-w-7xl mx-auto" data-aos="zoom-in-up">
+                    <div class="flowchart-flex-container">
+
+                        <!-- Stage 1: Data Sources -->
+                        <div class="flowchart-flex-stage justify-center">
+                            <div class="flowchart-node node-data" data-aos="fade-right" data-aos-delay="100"><i class="fas fa-spider"></i><span>数据爬虫</span><span class="node-subtitle">Scrapy</span></div>
+                            <div class="flowchart-node node-data" data-aos="fade-right" data-aos-delay="200"><i class="fas fa-database"></i><span>外部数据</span><span class="node-subtitle">API/DBs</span></div>
+                        </div>
+
+                        <!-- Connector 1 -->
+                        <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
+
+                        <!-- Stage 2: Processing / KG -->
+                        <div class="flowchart-flex-stage justify-center">
+                             <div class="flowchart-node node-data" data-aos="fade-up" data-aos-delay="400"><i class="fas fa-cogs"></i><span>数据处理</span><span class="node-subtitle">ETL</span></div>
+                             <div class="flowchart-node node-rag" data-aos="fade-down" data-aos-delay="500"><i class="fas fa-share-alt"></i><span>知识图谱</span><span class="node-subtitle">Neo4j</span></div>
+                        </div>
+
+                        <!-- Connector 2 -->
+                        <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
+
+                        <!-- Stage 3: User / RAG -->
+                         <div class="flowchart-flex-stage justify-center">
+                             <div class="flowchart-node node-io" data-aos="fade-left" data-aos-delay="700"><i class="fas fa-user-edit"></i><span>用户提问</span><span class="node-subtitle">Text/Image</span></div>
+                             <div class="flowchart-node node-rag" data-aos="fade-left" data-aos-delay="800"><i class="fas fa-book-reader"></i><span>RAG 融合</span><span class="node-subtitle">检索+图谱</span></div>
+                        </div>
+
+                        <!-- Connector 3 -->
+                        <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
+
+                        <!-- Stage 4: LLM -->
+                        <div class="flowchart-flex-stage justify-center">
+                            <div class="flowchart-node node-process" data-aos="fade-up" data-aos-delay="1000"><i class="fas fa-brain"></i><span>LLM 处理</span><span class="node-subtitle">DeepSeek</span></div>
+                        </div>
+
+                        <!-- Connector 4 -->
+                         <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
+
+                        <!-- Stage 5: Output -->
+                        <div class="flowchart-flex-stage justify-center">
+                            <div class="flowchart-node node-io" data-aos="fade-right" data-aos-delay="1200"><i class="fas fa-desktop"></i><span>智能回答</span><span class="node-subtitle">UI/UX</span></div>
+                        </div>
+
+                    </div>
+                    <p class="text-center mt-12 text-sm text-gray-600 dark:text-gray-400">(DeepForest 核心流程图)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack Section -->
+        <section id="tech" class="section-padding">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center section-title-mb" data-aos="fade-up">
+                    <h2 class="subheading text-secondary dark:text-secondary-light">技术驱动</h2>
+                    <p class="heading mt-2 text-gray-900 dark:text-white">构建 DeepForest 的坚实基础</p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8 text-center">
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="100"><i class="fas fa-brain tech-icon text-purple-500 dark:text-purple-400"></i><span class="tech-name">DeepSeek LLM</span><span class="tech-desc">微调大模型</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="150"><i class="fas fa-book-reader tech-icon text-blue-500 dark:text-blue-400"></i><span class="tech-name">RAG</span><span class="tech-desc">检索增强生成</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="200"><i class="fas fa-share-alt tech-icon text-green-500 dark:text-green-400"></i><span class="tech-name">Neo4j</span><span class="tech-desc">知识图谱</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="250"><i class="fab fa-react tech-icon text-cyan-500 dark:text-cyan-400"></i><span class="tech-name">React/Next.js</span><span class="tech-desc">前端框架</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="300"><i class="fas fa-server tech-icon text-yellow-600 dark:text-yellow-500"></i><span class="tech-name">Spring Boot</span><span class="tech-desc">后端框架</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="350"><i class="fab fa-python tech-icon text-indigo-500 dark:text-indigo-400"></i><span class="tech-name">Python</span><span class="tech-desc">AI/爬虫</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="400"><i class="fas fa-cloud tech-icon text-red-500 dark:text-red-400"></i><span class="tech-name">Spring AI</span><span class="tech-desc">AI集成</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="450"><i class="fas fa-palette tech-icon text-pink-500 dark:text-pink-400"></i><span class="tech-name">Ant Design</span><span class="tech-desc">UI 组件库</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="500"><i class="fas fa-chart-pie tech-icon text-orange-500 dark:text-orange-400"></i><span class="tech-name">ECharts</span><span class="tech-desc">数据可视化</span></div>
+                    <div class="tech-item" data-aos="zoom-in" data-aos-delay="550"><i class="fas fa-spider tech-icon text-teal-500 dark:text-teal-400"></i><span class="tech-name">Scrapy</span><span class="tech-desc">分布式爬虫</span></div>
+                </div>
+                 <p class="text-center mt-12 text-gray-700 dark:text-gray-300" data-aos="fade-up">使用 DeepSeek, React, Next.js, SpringBoot, Spring AI, Ant Design, ECharts, Python Scrapy 等一系列先进技术栈共同驱动 DeepForest 的强大功能。</p>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section id="benefits" class="section-padding">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center section-title-mb" data-aos="fade-up">
+                    <h2 class="subheading text-primary dark:text-primary-light">核心价值</h2>
+                    <p class="heading mt-2 text-gray-900 dark:text-white">DeepForest 为您带来</p>
+                </div>
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="benefit-item" data-aos="fade-right" data-aos-delay="100">
+                        <div class="benefit-icon-wrapper benefit-icon-bg-1"><i class="fas fa-bolt text-white text-2xl"></i></div>
+                        <div class="benefit-content">
+                            <h3 class="benefit-title">精准高效</h3>
+                            <p class="benefit-description">快速响应您的查询，基于海量数据和 AI 模型提供准确可靠的病虫害信息和防治建议，显著提升工作效率。</p>
+                        </div>
+                    </div>
+                     <div class="benefit-item" data-aos="fade-left" data-aos-delay="150">
+                        <div class="benefit-icon-wrapper benefit-icon-bg-2"><i class="fas fa-microscope text-white text-2xl"></i></div>
+                         <div class="benefit-content">
+                            <h3 class="benefit-title">深度洞察</h3>
+                            <p class="benefit-description">知识图谱揭示隐藏的关联，帮助您理解病虫害发生的深层原因、传播规律和潜在风险，辅助科学决策。</p>
+                        </div>
+                    </div>
+                     <div class="benefit-item" data-aos="fade-right" data-aos-delay="200">
+                        <div class="benefit-icon-wrapper benefit-icon-bg-3"><i class="fas fa-layer-group text-white text-2xl"></i></div>
+                         <div class="benefit-content">
+                            <h3 class="benefit-title">知识集成</h3>
+                            <p class="benefit-description">打破信息孤岛，整合多源异构数据，构建动态更新的林业知识库，成为您权威的信息中心。</p>
+                        </div>
+                    </div>
+                     <div class="benefit-item" data-aos="fade-left" data-aos-delay="250">
+                        <div class="benefit-icon-wrapper benefit-icon-bg-4"><i class="fas fa-user-shield text-white text-2xl"></i></div>
+                         <div class="benefit-content">
+                            <h3 class="benefit-title">辅助决策</h3>
+                            <p class="benefit-description">不仅提供信息，更能结合上下文进行分析、推理和预测，为防治策略制定、风险预警提供智能支持。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Further Reading Section -->
+        <section id="further-reading" class="section-padding">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="text-center section-title-mb" data-aos="fade-up">
+                    <h2 class="subheading text-secondary dark:text-secondary-light">延伸探索</h2>
+                    <p class="heading mt-2 text-gray-900 dark:text-white">深入了解相关领域</p>
+                </div>
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="reading-card" data-aos="fade-up" data-aos-delay="100">
+                         <div class="reading-icon-wrapper"><i class="fas fa-book"></i></div>
+                         <div class="reading-content">
+                             <h4 class="reading-title">《森林昆虫学》</h4>
+                             <p class="reading-description">系统介绍森林昆虫分类、生态及主要害虫防治，是林业专业的基础读物。</p>
+                         </div>
+                    </div>
+                     <div class="reading-card" data-aos="fade-up" data-aos-delay="150">
+                         <div class="reading-icon-wrapper"><i class="fas fa-seedling"></i></div>
+                         <div class="reading-content">
+                             <h4 class="reading-title">《森林病理学》</h4>
+                             <p class="reading-description">阐述森林病害的病原、发生规律和防治原理，涵盖真菌、细菌、病毒等多种病害类型。</p>
+                         </div>
+                    </div>
+                    <div class="reading-card" data-aos="fade-up" data-aos-delay="200">
+                         <div class="reading-icon-wrapper"><i class="fas fa-atlas"></i></div>
+                         <div class="reading-content">
+                             <h4 class="reading-title">《知识图谱：方法、实践与应用》</h4>
+                             <p class="reading-description">了解知识图谱构建、存储、查询和应用的核心技术，有助于理解 DeepForest 的图谱部分。</p>
+                         </div>
+                    </div>
+                     <div class="reading-card" data-aos="fade-up" data-aos-delay="250">
+                         <div class="reading-icon-wrapper"><i class="fas fa-robot"></i></div>
+                         <div class="reading-content">
+                             <h4 class="reading-title">RAG 相关论文</h4>
+                             <p class="reading-description">"Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" (Lewis et al., 2020) - 理解 RAG 如何结合检索与生成。(<a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener noreferrer" class="link text-blue-500 dark:text-blue-400 hover:underline">arXiv Link</a>)</p>
+                         </div>
+                    </div>
+                     <div class="reading-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="reading-icon-wrapper"><i class="fas fa-search"></i></div>
+                        <div class="reading-content">
+                             <h4 class="reading-title">《中国主要林业有害生物》</h4>
+                             <p class="reading-description">提供中国范围内主要林业病虫害的图文识别、分布和危害信息，是重要的参考工具书。</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section-padding">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="heading text-3xl sm:text-4xl text-gray-900 dark:text-white" data-aos="fade-up">准备好体验 DeepForest 了吗？</h2>
+                <p class="mt-6 text-lg leading-relaxed text-gray-700 dark:text-gray-300 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">无论是研究学习、林业管理还是病虫害防治，DeepForest 都能为您提供强大的智能支持。立即开始探索！</p>
+                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6" data-aos="fade-up" data-aos-delay="200">
+                    <a href="/chat" class="btn btn-gradient-primary group text-lg px-8 py-3"><i class="fas fa-rocket mr-2 group-hover:rotate-12 transition-transform duration-300"></i> 立即体验</a>
+                    <a href="mailto:contact@deepforest.example.com" class="btn btn-gradient-secondary group text-lg px-8 py-3"><i class="fas fa-envelope mr-2 group-hover:animate-bounce"></i> 联系我们</a>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="flex items-center mb-4 md:mb-0">
-             <i class="fas fa-tree text-primary text-xl mr-2"></i>
-             <span class="text-lg font-semibold font-serif text-gray-800 dark:text-gray-100">DeepForest</span>
-          </div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">
-            © 2025 DeepForest Project Contributors. 保留所有权利.
-          </div>
-          <div class="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"><span class="sr-only">隐私政策</span><i class="fas fa-shield-alt"></i></a>
-            <a href="#" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"><span class="sr-only">服务条款</span><i class="fas fa-file-contract"></i></a>
-            <a href="https://github.com/azure12355/deep-forest" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"><span class="sr-only">GitHub</span><i class="fab fa-github"></i></a>
-          </div>
+    <footer class="bg-white/80 dark:bg-gray-900/80 border-t border-gray-200 dark:border-gray-700 backdrop-blur-sm mt-16 md:mt-20 lg:mt-24 relative z-10">
+         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 md:gap-8">
+                <div class="flex items-center justify-center md:justify-start order-1" data-aos="fade-right">
+                    <i class="fas fa-tree text-primary dark:text-primary-light text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold font-serif text-gray-800 dark:text-gray-100">DeepForest</span>
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 order-3 md:order-2" data-aos="fade-up">
+                    <span>© 2025 DeepForest Project Contributors. 保留所有权利.</span>
+                    <span class="hidden sm:inline"> | </span><br class="sm:hidden">
+                    <a href="#" class="link ml-2">隐私政策</a> | <a href="#" class="link ml-1">服务条款</a>
+                </div>
+                <div class="flex justify-center space-x-6 order-2 md:order-3" data-aos="fade-left">
+                    <a href="https://github.com/azure12355/deep-forest" target="_blank" rel="noopener noreferrer" class="footer-icon-link" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" class="footer-icon-link" title="Twitter (示例)"><i class="fab fa-twitter"></i></a>
+                    <a href="mailto:contact@deepforest.example.com" class="footer-icon-link" title="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
         </div>
-      </div>
     </footer>
 
-    <!-- Mermaid JS -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
-    <!-- Dark Mode & Mermaid Initialization Script -->
-    <script>
-      // --- Dark Mode Logic ---
-      const themeToggleBtn = document.getElementById('theme-toggle');
-      const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-      const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-      const htmlElement = document.documentElement; // Get the <html> element
+    <!-- Global Background Elements (Keep this structure) -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+        <div class="absolute top-0 left-0 -translate-x-1/3 -translate-y-1/3 opacity-30 dark:opacity-20" aria-hidden="true">
+            <svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="500" cy="500" r="500" fill="url(#global-gradient-1)" />
+                <defs><radialGradient id="global-gradient-1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(500 500) rotate(90) scale(500)"><stop stop-color="#34D399" stop-opacity="0.5"/><stop offset="1" stop-color="#10B981" stop-opacity="0"/></radialGradient></defs>
+            </svg>
+        </div>
+        <div class="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 opacity-20 dark:opacity-15" aria-hidden="true">
+             <svg width="900" height="900" viewBox="0 0 900 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="450" cy="450" r="450" fill="url(#global-gradient-2)" />
+                <defs><radialGradient id="global-gradient-2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(450 450) rotate(90) scale(450)"><stop stop-color="#F59E0B" stop-opacity="0.4"/><stop offset="1" stop-color="#FCD34D" stop-opacity="0"/></radialGradient></defs>
+            </svg>
+        </div>
+    </div>
 
-      // Function to apply theme
-      function applyTheme(isDark) {
-          themeToggleLightIcon.classList.toggle('hidden', isDark);
-          themeToggleDarkIcon.classList.toggle('hidden', !isDark);
-          htmlElement.classList.toggle('dark', isDark);
-          // Store preference
-          localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
-          // Initialize or re-initialize Mermaid with the correct theme
-          initializeMermaid(isDark);
-      }
-
-      // Check initial theme
-      let isDarkMode = localStorage.getItem('color-theme') === 'dark' ||
-                       (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-      applyTheme(isDarkMode); // Apply initial theme
-
-      // Add toggle listener
-      themeToggleBtn.addEventListener('click', () => {
-          isDarkMode = !isDarkMode;
-          applyTheme(isDarkMode);
-      });
-
-      // Listen for system theme changes
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-           // Only update if no user preference is set
-           if (!('color-theme' in localStorage)) {
-              isDarkMode = event.matches;
-              applyTheme(isDarkMode);
-           }
-      });
-
-
-      // --- Mermaid Initialization ---
-      let mermaidInitialized = false;
-      function initializeMermaid(isDark) {
-          try {
-              const mermaidTheme = isDark ? 'dark' : 'default';
-              console.log(`Initializing Mermaid with theme: ${mermaidTheme}`);
-              // Set data attribute for CSS targeting
-              document.querySelectorAll('.mermaid').forEach(el => el.setAttribute('data-mermaid-theme', mermaidTheme));
-
-              if (mermaidInitialized) {
-                  // If already initialized, try to re-render or re-init if necessary
-                  // Simple re-init often works for theme changes
-                   mermaid.initialize({
-                        startOnLoad: false, // Don't automatically render on init again
-                        theme: mermaidTheme,
-                        // securityLevel: 'loose', // If needed for complex diagrams or icons
-                        fontFamily: '"Noto Sans SC", Tahoma, Arial, sans-serif', // Ensure font consistency
-                         themeVariables: { // Example dark theme overrides
-                           // You can customize dark theme variables here if needed
-                           // primaryColor: '#34d399',
-                           // background: '#1f2937',
-                           // nodeBorder: '#9ca3af',
-                           // nodeTextColor: '#f3f4f6',
-                           // ... etc
-                         }
-                    });
-                   // Force re-rendering existing diagrams (might be needed)
-                    mermaid.contentLoaded();
-              } else {
-                    // First time initialization
-                    mermaid.initialize({
-                        startOnLoad: true, // Render diagrams on page load
-                        theme: mermaidTheme,
-                        // securityLevel: 'loose',
-                        fontFamily: '"Noto Sans SC", Tahoma, Arial, sans-serif',
-                        themeVariables: {
-                           // ... dark theme overrides if needed ...
-                        }
-                    });
-                    mermaidInitialized = true;
-              }
-           } catch (error) {
-               console.error("Mermaid initialization failed:", error);
-               // Optionally display an error message to the user
-           }
-      }
-
-    </script>
-  </body>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="script.js" defer></script>
+</body>
 </html>
