@@ -140,6 +140,7 @@
         </section>
 
         <!-- How it Works / Visualization Section -->
+        <!-- How it Works / Visualization Section -->
         <section id="visualization" class="section-padding">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                  <div class="text-center section-title-mb" data-aos="fade-up">
@@ -148,47 +149,59 @@
                     <p class="mt-6 max-w-2xl mx-auto text-lg leading-relaxed text-gray-700 dark:text-gray-300">DeepForest 通过精密的流程整合数据、构建知识并生成智能回答，将复杂信息转化为您的决策依据。</p>
                 </div>
 
-                <!-- [修改] New Flowchart Layout Container -->
+                <!-- [修改] New Flowchart Layout - Flexbox based -->
                 <div class="max-w-7xl mx-auto" data-aos="zoom-in-up">
-                    <div class="flowchart-layout-container">
+                    <div class="flowchart-flex-container">
 
                         <!-- Stage 1: Data Sources -->
-                        <div class="flowchart-stage">
+                        <div class="flowchart-flex-stage justify-center">
                             <div class="flowchart-node node-data" data-aos="fade-right" data-aos-delay="100"><i class="fas fa-spider"></i><span>数据爬虫</span><span class="node-subtitle">Scrapy</span></div>
                             <div class="flowchart-node node-data" data-aos="fade-right" data-aos-delay="200"><i class="fas fa-database"></i><span>外部数据</span><span class="node-subtitle">API/DBs</span></div>
                         </div>
 
-                        <!-- Arrow 1 -->
-                        <div class="flowchart-arrow-connector" data-aos="fade-in" data-aos-delay="300"></div>
-
-                        <!-- Stage 2: Processing & KG -->
-                        <div class="flowchart-stage">
-                            <div class="flowchart-node node-data" data-aos="fade-up" data-aos-delay="400"><i class="fas fa-cogs"></i><span>数据处理</span><span class="node-subtitle">ETL</span></div>
-                            <div class="flowchart-node node-rag" data-aos="fade-down" data-aos-delay="500"><i class="fas fa-share-alt"></i><span>知识图谱</span><span class="node-subtitle">Neo4j</span></div>
+                        <!-- Connector 1 -->
+                        <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
                         </div>
 
-                        <!-- Arrow 2 -->
-                        <div class="flowchart-arrow-connector" data-aos="fade-in" data-aos-delay="600"></div>
+                        <!-- Stage 2: Processing / KG -->
+                        <div class="flowchart-flex-stage justify-center">
+                             <div class="flowchart-node node-data" data-aos="fade-up" data-aos-delay="400"><i class="fas fa-cogs"></i><span>数据处理</span><span class="node-subtitle">ETL</span></div>
+                             <div class="flowchart-node node-rag" data-aos="fade-down" data-aos-delay="500"><i class="fas fa-share-alt"></i><span>知识图谱</span><span class="node-subtitle">Neo4j</span></div>
+                        </div>
 
-                        <!-- Stage 3: User Input & RAG -->
-                         <div class="flowchart-stage">
-                            <div class="flowchart-node node-io" data-aos="fade-left" data-aos-delay="700"><i class="fas fa-user-edit"></i><span>用户提问</span><span class="node-subtitle">Text/Image</span></div>
+                        <!-- Connector 2 -->
+                        <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
+
+                        <!-- Stage 3: User / RAG -->
+                         <div class="flowchart-flex-stage justify-center">
+                             <div class="flowchart-node node-io" data-aos="fade-left" data-aos-delay="700"><i class="fas fa-user-edit"></i><span>用户提问</span><span class="node-subtitle">Text/Image</span></div>
                              <div class="flowchart-node node-rag" data-aos="fade-left" data-aos-delay="800"><i class="fas fa-book-reader"></i><span>RAG 融合</span><span class="node-subtitle">检索+图谱</span></div>
                         </div>
 
-                        <!-- Arrow 3 -->
-                        <div class="flowchart-arrow-connector" data-aos="fade-in" data-aos-delay="900"></div>
+                        <!-- Connector 3 -->
+                        <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
 
                         <!-- Stage 4: LLM -->
-                        <div class="flowchart-stage">
+                        <div class="flowchart-flex-stage justify-center">
                             <div class="flowchart-node node-process" data-aos="fade-up" data-aos-delay="1000"><i class="fas fa-brain"></i><span>LLM 处理</span><span class="node-subtitle">DeepSeek</span></div>
                         </div>
 
-                        <!-- Arrow 4 -->
-                         <div class="flowchart-arrow-connector" data-aos="fade-in" data-aos-delay="1100"></div>
+                        <!-- Connector 4 -->
+                         <div class="flowchart-flex-connector">
+                            <div class="connector-line"></div>
+                            <div class="connector-arrow"></div>
+                        </div>
 
                         <!-- Stage 5: Output -->
-                        <div class="flowchart-stage">
+                        <div class="flowchart-flex-stage justify-center">
                             <div class="flowchart-node node-io" data-aos="fade-right" data-aos-delay="1200"><i class="fas fa-desktop"></i><span>智能回答</span><span class="node-subtitle">UI/UX</span></div>
                         </div>
 
