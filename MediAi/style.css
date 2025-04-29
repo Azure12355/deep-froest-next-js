@@ -11,8 +11,8 @@
     --secondary-color: #14B8A6;     /* teal-500 */
     --secondary-color-light: #2DD4BF;/* teal-400 */
     /* 强调色 (琥珀黄/金色系) */
-    --accent-color: #F59E0B;        /* amber-500 */
-    --accent-color-light: #FCD34D;  /* amber-300 */
+    --accent-color: #0b3af5;        /* amber-500 */
+    --accent-color-light: #416aef;  /* amber-300 */
 
     /* 背景色 */
     --bg-light: #F9FAFB;           /* gray-50 (非常浅的灰色) */
@@ -102,17 +102,17 @@
 
     /* --- MediAI 特定组件颜色变量 --- */
     /* 特性图标背景 (示例) */
-    --icon-bg-feature-1-light: #DBEAFE; --icon-color-feature-1-light: #1D4ED8; /* blue */
+    --icon-bg-feature-1-light: #297ef1; --icon-color-feature-1-light: #1D4ED8; /* blue */
     --icon-bg-feature-1-dark: #1E3A8A;  --icon-color-feature-1-dark: #93C5FD;
-    --icon-bg-feature-2-light: #CFFAFE; --icon-color-feature-2-light: #0E7490; /* cyan */
+    --icon-bg-feature-2-light: #1bd9e7; --icon-color-feature-2-light: #0E7490; /* cyan */
     --icon-bg-feature-2-dark: #164E63;  --icon-color-feature-2-dark: #67E8F9;
-    --icon-bg-feature-3-light: #FEF3C7; --icon-color-feature-3-light: #92400E; /* amber */
+    --icon-bg-feature-3-light: #efcb3d; --icon-color-feature-3-light: #92400E; /* amber */
     --icon-bg-feature-3-dark: #78350F;  --icon-color-feature-3-dark: #FCD34D;
-    --icon-bg-feature-4-light: #E0E7FF; --icon-color-feature-4-light: #3730A3; /* indigo */
+    --icon-bg-feature-4-light: #315bed; --icon-color-feature-4-light: #3730A3; /* indigo */
     --icon-bg-feature-4-dark: #312E81;  --icon-color-feature-4-dark: #A5B4FC;
-    --icon-bg-feature-5-light: #D1FAE5; --icon-color-feature-5-light: #047857; /* emerald */
+    --icon-bg-feature-5-light: #3fec93; --icon-color-feature-5-light: #047857; /* emerald */
     --icon-bg-feature-5-dark: #064E3B;  --icon-color-feature-5-dark: #A7F3D0;
-    --icon-bg-feature-6-light: #FEE2E2; --icon-color-feature-6-light: #991B1B; /* red */
+    --icon-bg-feature-6-light: #ea5858; --icon-color-feature-6-light: #991B1B; /* red */
     --icon-bg-feature-6-dark: #7F1D1D;  --icon-color-feature-6-dark: #FCA5A5;
 
     /* 流程图节点颜色 (示例) */
